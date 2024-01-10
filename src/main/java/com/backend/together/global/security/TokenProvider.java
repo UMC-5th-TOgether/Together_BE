@@ -1,6 +1,6 @@
 package com.backend.together.global.security;
 
-import com.backend.together.domain.member.entity.Member;
+import com.backend.together.domain.member.entity.MemberEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,11 +18,11 @@ public class TokenProvider {
     @Value("${spring.jwt.secretKey}")
     private String secretKey;
 
-    public String create(Member member){
+    public String create(MemberEntity memberEntity){
         Date expiryDate=Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, secretKey)
-                .setSubject(member.getMemberId().toString()) // String으로 변환함!
+                .setSubject(memberEntity.getMemberId().toString()) // String으로 변환함!
                 .setIssuer("demo app")
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)

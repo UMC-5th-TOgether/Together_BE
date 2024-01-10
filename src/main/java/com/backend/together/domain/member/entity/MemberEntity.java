@@ -1,18 +1,15 @@
 package com.backend.together.domain.member.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Data
 @Entity
-@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="member")
-public class Member {
+public class MemberEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
