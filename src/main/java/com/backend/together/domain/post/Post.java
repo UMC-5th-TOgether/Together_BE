@@ -1,0 +1,62 @@
+package com.backend.together.domain.post;
+
+import com.backend.together.domain.category.Category;
+import com.backend.together.domain.enums.Gender;
+import com.backend.together.domain.enums.PostStatus;
+//import com.backend.domain.mapping.PostCategory;
+import com.backend.together.domain.mapping.PostHashtag;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Getter
+@Setter
+//@Data
+//@Table(name = "Post")
+public class Post {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 20) // 추후 변경
+    private Long memberId;
+
+    @Column(nullable = false, length = 40)
+    private String title;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
+    private Gender gender;
+    @ColumnDefault("0")
+    private Integer personNum;
+    @Column(nullable = false, length = 40)
+    private String content;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
+    private PostStatus status;
+    // 게시글 조회수 추가 (24.01.13)
+    @Column(nullable = false, length = 20)
+    private Long view;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+    
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostImage> postImageList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostHashtag> postHashtagList = new ArrayList<>();
+    
+
+    // oneTomany member
+
+
+}
