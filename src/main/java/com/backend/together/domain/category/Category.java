@@ -1,28 +1,36 @@
 package com.backend.together.domain.category;
 
 //import com.backend.domain.mapping.PostCategory;
+import com.backend.together.domain.enums.Gender;
 import com.backend.together.domain.post.Post;
+import com.backend.together.domain.post.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class Category {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
+public enum Category {
+    HOBBY, PLAY, EXERCISE, EAT;
 
-    @Column(nullable = false, length = 40)
-    private String categoryName;
+    public static Category fromString(String value) {
+        for (Category category : Category.values()) {
+            if (category.name().equalsIgnoreCase(value)) {
+                return category;
+            }
+        }
+        throw new IllegalArgumentException("Invalid category value: " + value);
+    }
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private List<Post> postList = new ArrayList<>();
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private  Long id;
+//
+//    @Column(nullable = false, length = 40)
+//    private String categoryName;
+//
+//////// 잘 모르겠다....category에서 리스트를 만들지 enum으로 할지
+////    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+////    private List<Post> postList = new ArrayList<>();
 }

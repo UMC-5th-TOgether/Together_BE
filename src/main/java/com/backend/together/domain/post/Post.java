@@ -5,6 +5,7 @@ import com.backend.together.domain.enums.Gender;
 import com.backend.together.domain.enums.PostStatus;
 //import com.backend.domain.mapping.PostCategory;
 import com.backend.together.domain.mapping.PostHashtag;
+import com.backend.together.domain.post.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -20,7 +21,7 @@ import java.util.List;
 @Setter
 //@Data
 //@Table(name = "Post")
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,8 +45,13 @@ public class Post {
     @Column(nullable = false, length = 20)
     private Long view;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "category_id")
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "category_id")
+////    @Column(nullable = false, length = 40)
+@Enumerated(EnumType.STRING)
+@Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
     private Category category;
     
 

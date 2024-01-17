@@ -1,27 +1,24 @@
 package com.backend.together.domain.post.service;
 
+import com.backend.together.domain.category.Category;
 import com.backend.together.domain.post.Post;
-import com.backend.together.domain.post.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class PostService {
+import java.util.List;
+import java.util.Optional;
 
-    @Autowired
-    private PostRepository repository;
+public interface PostService {
+    public Post createPost(Post post);
 
-    public String testService() {
-        Post post = Post.builder().title("first post").build();
-        repository.save(post);
-        Post savedPost = repository.findById(post.getId()).get();
-        return savedPost.getTitle();
-    }
-//    public List<Post> create(final Post post) {
-//        // validations
-//        if (post == null) {
-//            //log.warn("Entity cannot be null");
-//        }
-//        repository.save(post);
-//    }
+    public void deletePost(Long postId);
+
+    public Post updatePost(Post post);
+
+    public Optional<Post> retrievePostById(Long postId);
+
+    public List<Post> retrievePostsByKeyword(String keyword);
+
+
+            // ...해시태그 검색, 카테고리 검색 등.....
+
+
 }

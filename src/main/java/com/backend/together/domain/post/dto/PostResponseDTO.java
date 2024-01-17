@@ -1,18 +1,18 @@
 package com.backend.together.domain.post.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostResponseDTO {
+@Data
+public class PostResponseDTO<T> {
 
-        Long postId;
-        LocalDateTime createdAt;
+        private String error;
+        private List<T> data;
 
 }

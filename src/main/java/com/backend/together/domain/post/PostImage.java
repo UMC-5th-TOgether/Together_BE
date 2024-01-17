@@ -1,5 +1,6 @@
 package com.backend.together.domain.post;
 
+import com.backend.together.domain.post.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 @Entity
@@ -7,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class PostImage {
+public class PostImage extends BaseEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
