@@ -5,9 +5,12 @@ import com.backend.together.domain.member.enums.Gender;
 import com.backend.together.domain.member.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.repository.PostRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +20,8 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostRepository repository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public String testService() {
         Post post = Post.builder().title("first post").build();
@@ -78,6 +83,13 @@ public class PostServiceImpl implements PostService {
     public List<Post> retrievePostsByStatus(PostStatus status) {
         List<Post> postByGender = repository.findPostByStatus(status);
         return postByGender;
+    }
+    /* Views Counting */
+    /* Views Counting */
+    @Override
+    @Transactional
+    public void updateView(Long id) {
+        repository.updateView(id);
     }
 
 

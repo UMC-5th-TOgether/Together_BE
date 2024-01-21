@@ -12,8 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.backend.together.domain.post.converter.StringToEnumConverterFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,9 +45,17 @@ public class PostController {
     * entities -> dtos -> responseDTO -> responseEntity
     * return post
     * */
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> findAllPost(){
         List<Post> entities = service.retrieve();
+        // update view
+        Iterator<Post> iterator = entities.iterator();
+
+        while (iterator.hasNext()){
+            Long id = iterator.next().getId();
+            service.updateView(id);
+        }
+        //
         List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
         PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
                 data(dtos)
@@ -155,7 +167,13 @@ public class PostController {
 //                data(dtos)
 //                .build();
 //        return ResponseEntity.ok().body(response);
+        // 사용자 ID 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long memberId = Long.parseLong(authentication.getName());
+
         Post newPost = PostRequestDTO.toEntity(requestDTO);
+        newPost.setMemberId(memberId);
+
         service.createPost(newPost);
         // 다시 조회하여 반환
         Optional<Post> savedPost = service.retrievePostById(newPost.getId()); // 예시로 findById 메서드를 사용했으며, 실제 사용하는 메서드에 따라 다를 수 있습니다.

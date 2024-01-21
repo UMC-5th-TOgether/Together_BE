@@ -17,6 +17,7 @@ public interface PostService {
 
     public List<Post> retrievePostsByKeyword(String keyword);
 
+    public void updateView(Long id);
 
             // ...해시태그 검색, 카테고리 검색 등.....
 

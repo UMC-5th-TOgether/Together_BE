@@ -5,8 +5,13 @@ import com.backend.together.domain.category.Category;
 import com.backend.together.domain.member.enums.Gender;
 import com.backend.together.domain.member.enums.PostStatus;
 import com.backend.together.domain.post.Post;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,5 +30,8 @@ public interface PostRepository extends JpaRepository<Post, Long> { // extends J
 //    List<Post> findPostByPostHashtagList_Hashtag_Name(String hashtag);
 
     List<Post> findPostByStatus(String status);
+    @Modifying
+    @Query("update Post p set p.view = p.view + 1 where p.id = :id")
+    int updateView(Long id);
 
 }
