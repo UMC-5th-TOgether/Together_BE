@@ -8,14 +8,14 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({"isSuccess", "code", "message", "result"})
+@JsonPropertyOrder({"isSuccess", "code", "message", "data"})
 public class ApiErrResponse<T> {
     @JsonProperty("isSuccess")
     private final Boolean isSuccess;
     private final String code;
     private final String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private T result;
+    private T data;
 
     public static <T> ApiErrResponse<T> onFailure(String code, String message, T data){
         return new ApiErrResponse<>(false, code, message, data);
