@@ -1,7 +1,5 @@
 package com.backend.together.domain.comment;
 
-import com.backend.together.domain.enums.Gender;
-import com.backend.together.domain.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.common.BaseEntity;
 import jakarta.persistence.*;

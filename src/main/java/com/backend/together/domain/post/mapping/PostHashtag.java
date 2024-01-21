@@ -1,4 +1,4 @@
-package com.backend.together.domain.mapping;
+package com.backend.together.domain.post.mapping;
 
 import com.backend.together.domain.post.Hashtag;
 import com.backend.together.domain.post.Post;

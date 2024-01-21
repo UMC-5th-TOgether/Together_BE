@@ -1,4 +1,4 @@
-package com.backend.together.global;
+package com.backend.together.global.config;
 
 import com.backend.together.domain.post.converter.StringToEnumConverterFactory;
 import org.springframework.context.annotation.Configuration;

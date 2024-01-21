@@ -1,11 +1,10 @@
 package com.backend.together.domain.post.service;
 
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.enums.Gender;
-import com.backend.together.domain.enums.PostStatus;
+import com.backend.together.domain.member.enums.Gender;
+import com.backend.together.domain.member.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.repository.PostRepository;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.backend.together.domain.post;
 
-import com.backend.together.domain.mapping.PostHashtag;
+import com.backend.together.domain.post.mapping.PostHashtag;
 import com.backend.together.domain.post.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

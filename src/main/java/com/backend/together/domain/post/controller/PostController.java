@@ -1,13 +1,12 @@
 package com.backend.together.domain.post.controller;
 
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.enums.Gender;
-import com.backend.together.domain.enums.PostStatus;
+import com.backend.together.domain.member.enums.Gender;
+import com.backend.together.domain.member.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.dto.PostRequestDTO;
 import com.backend.together.domain.post.dto.PostResponseDTO;
 import com.backend.together.domain.post.dto.TestRequestBodyDTO;
-import com.backend.together.domain.post.service.PostService;
 import com.backend.together.domain.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

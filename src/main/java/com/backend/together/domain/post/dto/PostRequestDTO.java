@@ -1,21 +1,15 @@
 package com.backend.together.domain.post.dto;
 
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.enums.Gender;
-import com.backend.together.domain.enums.PostStatus;
-import com.backend.together.domain.mapping.PostHashtag;
-import com.backend.together.domain.post.Hashtag;
+import com.backend.together.domain.member.enums.Gender;
+import com.backend.together.domain.member.enums.PostStatus;
 //import com.backend.domain.post.PostImage;
 import com.backend.together.domain.post.Post;
-import com.backend.together.domain.post.PostImage;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import java.util.ArrayList;
-import java.util.List;
 @Data
 @Getter
 @Setter

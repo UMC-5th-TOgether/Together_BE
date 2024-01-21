@@ -17,3 +17,5 @@ spring:
         hbm2ddl:
           auto: update
         default_batch_fetch_size: 1000
+  jwt:
+    secretKey: L2YQ3xcDPXCFunobNxiVC9HEbv7P0h7HAap2oLdyLqygtbPWAvw29YJ0TvVubFp

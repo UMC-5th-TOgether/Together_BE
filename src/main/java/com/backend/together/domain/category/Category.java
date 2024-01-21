@@ -1,14 +1,6 @@
 package com.backend.together.domain.category;
 
 //import com.backend.domain.mapping.PostCategory;
-import com.backend.together.domain.enums.Gender;
-import com.backend.together.domain.post.Post;
-import com.backend.together.domain.post.common.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public enum Category {

@@ -1,6 +1,4 @@
-package com.backend.together.domain.enums;
-
-import com.backend.together.domain.category.Category;
+package com.backend.together.domain.member.enums;
 
 public enum PostStatus {
     ING, END;
