@@ -49,6 +49,7 @@ public class PostRequestDTO {
 //        List<PostHashtag> postHashtagList;
 
 
+
     public PostRequestDTO(Post post) {
         this.id = post.getId();
         this.memberId = post.getMemberId();

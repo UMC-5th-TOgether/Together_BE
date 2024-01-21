@@ -1,6 +1,7 @@
 package com.backend.together.domain.post;
 
 import com.backend.together.domain.category.Category;
+import com.backend.together.domain.comment.Comment;
 import com.backend.together.domain.enums.Gender;
 import com.backend.together.domain.enums.PostStatus;
 //import com.backend.domain.mapping.PostCategory;
@@ -60,7 +61,9 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostHashtag> postHashtagList = new ArrayList<>();
-    
+    // 24.01.20 추가
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> commentList = new ArrayList<>();
 
     // oneTomany member
 
