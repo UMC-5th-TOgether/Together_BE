@@ -52,7 +52,7 @@ public class PostRequestDTO {
         this.personNum = post.getPersonNum();
         this.content = post.getContent();
         this.status = post.getStatus(); // enum
-        //this.view = post.getView();
+        this.view = post.getView();
 
         // Load the category to avoid Hibernate proxy issues
         Hibernate.initialize(post.getCategory());

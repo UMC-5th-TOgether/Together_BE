@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> { // extends JpaRepository<Post, Long>
@@ -27,7 +28,8 @@ public interface PostRepository extends JpaRepository<Post, Long> { // extends J
 
     List<Post> findPostByStatus(PostStatus status);
 
-//    List<Post> findPostByPostHashtagList_Hashtag_Name(String hashtag);
+    //    List<Post> findPostByPostHashtagList_Hashtag_Name(String hashtag);
+    Optional<Post> findPostById(Long postId);
 
     List<Post> findPostByStatus(String status);
     @Modifying

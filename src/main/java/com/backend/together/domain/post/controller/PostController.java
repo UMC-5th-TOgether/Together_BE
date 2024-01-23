@@ -45,17 +45,24 @@ public class PostController {
     * entities -> dtos -> responseDTO -> responseEntity
     * return post
     * */
-    @GetMapping
-    public ResponseEntity<?> findAllPost(){
-        List<Post> entities = service.retrieve();
+    public void updateViewList(List<Post> list) {
         // update view
-        Iterator<Post> iterator = entities.iterator();
+        Iterator<Post> iterator = list.iterator();
 
         while (iterator.hasNext()){
             Long id = iterator.next().getId();
             service.updateView(id);
         }
-        //
+
+    }
+    public void updateView(Post p) {
+        // update view
+        service.updateView(p.getId());
+    }
+    @GetMapping
+    public ResponseEntity<?> findAllPost(){
+        List<Post> entities = service.retrieve();
+
         List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
         PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
                 data(dtos)
@@ -63,6 +70,22 @@ public class PostController {
         return ResponseEntity.ok().body(response);
 
     }
+    @GetMapping("/id")
+    public ResponseEntity<?> findById(@RequestParam Long postId){
+        Optional<Post> entity = service.retrievePostById(postId);
+
+        Post post = entity.orElse(null);
+        if (post != null) {
+            updateView(post);
+        }
+
+        if(entity.isEmpty()) {
+            return ResponseEntity.badRequest().body(entity);
+        }
+        return ResponseEntity.ok().body(entity);
+
+    }
+
     /*
      * api : url/api/posts/keyword?keyword=22
      * entities -> dtos -> responseDTO -> responseEntity
@@ -83,7 +106,7 @@ public class PostController {
      * return posts by memberId
      * */
     @GetMapping("/member")
-    public ResponseEntity<?> findPostsByKeyword(@RequestParam Long memberId) {
+    public ResponseEntity<?> findPostsByMember(@RequestParam Long memberId) {
         List<Post> entities = service.retrievePostByMemberId(memberId);
         List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
         PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
