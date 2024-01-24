@@ -1,0 +1,44 @@
+package com.backend.together.domain.chat.entity;
+
+import com.backend.together.domain.member.entity.MemberEntity;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Entity
+@NoArgsConstructor
+@Getter
+@Setter
+public class ChatRoom {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "host_id")
+    private MemberEntity host;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guest_id")
+    private MemberEntity guest;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime hostEntryTime;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime guestEntryTime;
+    private ChatRoom(MemberEntity host , MemberEntity guest, LocalDateTime time) {
+        this.host = host;
+        this.guest = guest;
+        this.hostEntryTime = time;
+        this.guestEntryTime = time;
+    }
+    public static ChatRoom of(MemberEntity host, MemberEntity guest, LocalDateTime time){
+        return new ChatRoom(host,guest,time);
+    }
+    public void updateHostEntryTime(LocalDateTime time){
+        this.hostEntryTime = time;
+    }
+    public void updateGuestEntryTime(LocalDateTime time){
+        this.guestEntryTime = time;
+    }
+}
