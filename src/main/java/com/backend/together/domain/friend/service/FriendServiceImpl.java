@@ -8,8 +8,8 @@ import com.backend.together.domain.matching.repository.MatchingRepository;
 import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.member.repository.MemberRepository;
 import com.backend.together.global.apiPayload.code.status.ErrorStatus;
-import com.backend.together.global.apiPayload.exception.handler.MatchingHandler;
-import com.backend.together.global.apiPayload.exception.handler.MemberHandler;
+import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public List<Matching> getFollowingList(Long userId) {
         MemberEntity member = memberRepository.findByMemberId(userId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         return matchingRepository.findAllBySenderAndStatus(member, MatchingStatus.PENDING);
     }
@@ -34,7 +34,7 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public List<Matching> getFollowerList(Long userId) {
         MemberEntity member = memberRepository.findByMemberId(userId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         return matchingRepository.findAllByReceiverAndStatus(member, MatchingStatus.PENDING);
     }
@@ -43,7 +43,7 @@ public class FriendServiceImpl implements FriendService{
     public void addNewFriend(Matching matching) {
         //매칭 상태가 accept일 때만 친구 추가
         if (!matching.getStatus().equals(MatchingStatus.ACCEPT)){
-            throw new MatchingHandler(ErrorStatus.MATCHING_NOT_ACCEPT);
+            throw new CustomHandler(ErrorStatus.MATCHING_NOT_ACCEPT);
         }
 
         FriendList newFriendList = FriendList.builder()

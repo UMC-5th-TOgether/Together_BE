@@ -1,3 +1,4 @@
+
 package com.backend.together.global.config;
 
 import org.springframework.context.annotation.Configuration;

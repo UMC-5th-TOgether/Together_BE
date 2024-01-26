@@ -1,5 +1,6 @@
 package com.backend.together.domain.member.dto;
 
+import com.backend.together.domain.member.entity.MemberEntity;
 import lombok.*;
 
 @Data
@@ -13,4 +14,6 @@ public class MemberDto {
     private String email;
 
     private String password;
+
+
 }
