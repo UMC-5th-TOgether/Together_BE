@@ -8,9 +8,9 @@ import java.util.List;
 public interface CommentService {
     public List<Comment> retrieveCommentsWithParent(Long postId);
 
-        public Comment create(Comment comment);
+    public Comment create(Comment comment);
 
-    public Comment delete();
+    public void delete(Long commentId);
 
     public Comment update();
 

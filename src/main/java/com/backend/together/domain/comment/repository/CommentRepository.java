@@ -20,4 +20,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "ORDER BY comment.parent.id ASC NULLS FIRST, comment.createdAt ASC")
     List<Comment> findCommentsWithParentFetch(@Param("id") Long id);
 
+    public Optional<Comment> findCommentById(Long commentId);
+
 }

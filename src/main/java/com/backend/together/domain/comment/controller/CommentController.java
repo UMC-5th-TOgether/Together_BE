@@ -7,15 +7,13 @@ import com.backend.together.domain.comment.dto.CommentResponseDTO;
 import com.backend.together.domain.comment.service.CommentService;
 import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.post.dto.PostResponseDTO;
+import com.backend.together.global.apiPayload.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +32,7 @@ public class CommentController {
     // get :
     // get :
     // get :
-    // post : 댓글 추가하기
+    // post : 댓글 추가하기 0
     // post :
     // update : 댓글 수정하기
     // delete : 댓글 삭제하기
@@ -82,6 +80,13 @@ public class CommentController {
         Comment comment = converter.CommentToEntity(dto);
         service.create(comment);
         return ResponseEntity.ok().body(dto);
+    }
+
+    @DeleteMapping({"/id"})
+    public ResponseEntity<?> deleteComment(Long id) {
+        service.delete(id);
+
+        return ResponseEntity.ok().body(true);
     }
 
 }
