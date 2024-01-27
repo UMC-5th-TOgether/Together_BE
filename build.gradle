@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation group: 'io.jsonwebtoken', name:'jjwt',version:'0.9.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'net.nurigo:sdk:4.3.0' // 본인인증
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
