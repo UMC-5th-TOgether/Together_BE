@@ -9,6 +9,7 @@ public class KakaoProfile {
     public String connected_at;
     public Properties properties;
     public KakaoAccount kakao_account;
+    public Boolean setPrivacyInfo;
 
     @Data
     public class Properties {
