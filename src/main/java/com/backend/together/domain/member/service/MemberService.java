@@ -63,9 +63,6 @@ public class MemberService {
     private String coolsms_api_secret;
 
     public void create(final MemberEntity memberEntity) throws Exception {
-        /*if(memberRepository.existsByNickname(memberEntity.getNickname())){
-            throw new RuntimeException("이미 존재하는 닉네임입니다.");
-        }*/
             if(memberRepository.existsByEmail(memberEntity.getEmail())){ // 이메일 중복 불가!
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
@@ -94,8 +91,7 @@ public class MemberService {
         }
     }
 
-    // 이메일과 닉네임으로 비밀번호 찾기
-    //public boolean findPasswordByEmailAndNickname(final String email,final String nickname) throws Exception {public boolean findPasswordByEmailAndNickname(final String email,final String nickname) throws Exception {
+    // 이메일로 비밀번호 찾기
     public boolean findPasswordByEmail(final String email) throws Exception {
             final Optional<MemberEntity> member = memberRepository.findByEmail(email);
         if(member.isPresent()) {
@@ -396,21 +392,17 @@ public class MemberService {
     private void init(){
         this.messageService = NurigoApp.INSTANCE.initialize(coolsms_api_key, coolsms_api_secret, "https://api.coolsms.co.kr");
     }
-
-
     // 단일 메시지 발송 예제
     public SingleMessageSentResponse sendOne(String to, String verificationCode) {
 
         Message message = new Message();
         // 발신번호 및 수신번호는 반드시 01012345678 형태로 입력되어야 합니다.
-        message.setFrom("01025925840");
-        message.setTo(to);
+        message.setFrom("발신번호");
+        message.setTo(to); // 수신번호
         message.setText("[TOgether] 아래의 인증번호를 입력해주세요\n" + verificationCode);
 
         SingleMessageSentResponse response = messageService.sendOne(new SingleMessageSendingRequest(message));
         return response;
     }
-
-
-
+    
 }

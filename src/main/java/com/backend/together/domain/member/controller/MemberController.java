@@ -181,7 +181,6 @@ public class MemberController {
                     .memberStatus(MemberStatus.NORMAL)
                     .provider(Provider.KAKAO)
                     .build();
-            //memberService.create(memberEntity);
 
             String token = memberService.kakaoLogin(memberEntity);
 
@@ -218,7 +217,6 @@ public class MemberController {
                     .memberStatus(MemberStatus.NORMAL)
                     .provider(Provider.NAVER)
                     .build();
-            //memberService.create(memberEntity);
 
             String token = memberService.naverLogin(memberEntity);
 
@@ -242,7 +240,7 @@ public class MemberController {
     public ResponseEntity<ResponseDto> sendSMS(@RequestParam String phoneNumber) {
 
         try {
-            Random rand = new Random();
+            Random rand = new Random(); // 인증번호 : 랜덤값 4자리
             String numStr = "";
             for (int i = 0; i < 4; i++) {
                 String ran = Integer.toString(rand.nextInt(10));
