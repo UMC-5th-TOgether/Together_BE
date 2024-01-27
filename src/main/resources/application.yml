@@ -20,28 +20,6 @@ spring:
   jwt:
     secretKey: L2YQ3xcDPXCFunobNxiVC9HEbv7P0h7HAap2oLdyLqygtbPWAvw29YJ0TvVubFp
 
-  google:
-    client_id: 996738602787-87t20h6g3lchiot27fh5t4vujl8as3sm.apps.googleusercontent.com
-    client_secret: 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
-    redirect_uri: http://localhost:8080/api/auth/login/google
-    token_uri: https://oauth2.googleapis.com/token
-    resource_uri: https://www.googleapis.com/oauth2/v2/userinfo
-
-  kakao:
-    client_id: 0dfcb1659c7037841933188c25106996
-    redirect_uri: http://localhost:8080/api/auth/login/kakao
-    token_uri: https://kauth.kakao.com/oauth/token
-
-  naver:
-    client_id: 9RDc3eqVIOZXzPv62aU2
-    client_secret: KPAQarbtmR
-    redirect_uri: http://localhost:8080/api/auth/login/naver
-    token_uri: https://nid.naver.com/oauth2.0/token
-
-  coolsms:
-    key: NCSNHDLUUIQIHOYG
-    secret: CQMRKQBLZ7XT5MMVMEOLWCHOOVE6LYWW
-
 
 
 
