@@ -56,7 +56,7 @@ public class MatchingResponseDTO {
         Long userId;
         String nickname;
         //String gender;
-        Integer age;
+        String age;
 
         public static SenderInfoDTO senderInfo(Matching matching){
             return SenderInfoDTO.builder()
