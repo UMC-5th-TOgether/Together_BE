@@ -1,8 +1,8 @@
 package com.backend.together.domain.post.service;
 
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.member.enums.Gender;
-import com.backend.together.domain.member.enums.PostStatus;
+import com.backend.together.global.enums.Gender;
+import com.backend.together.global.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.repository.PostRepository;
 import jakarta.persistence.EntityManager;

@@ -1,4 +1,4 @@
-package com.backend.together.domain.enums;
+package com.backend.together.global.enums;
 
 public enum FriendStatus {
     NORMAL, BLOCKED

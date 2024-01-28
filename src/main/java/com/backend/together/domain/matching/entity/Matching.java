@@ -1,6 +1,6 @@
 package com.backend.together.domain.matching.entity;
 
-import com.backend.together.domain.enums.MatchingStatus;
+import com.backend.together.global.enums.MatchingStatus;
 import com.backend.together.domain.member.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;

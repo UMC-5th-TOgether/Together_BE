@@ -1,8 +1,8 @@
 package com.backend.together.domain.post.controller;
 
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.member.enums.Gender;
-import com.backend.together.domain.member.enums.PostStatus;
+import com.backend.together.global.enums.Gender;
+import com.backend.together.global.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.dto.PostRequestDTO;
 import com.backend.together.domain.post.dto.PostResponseDTO;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.backend.together.domain.post.converter.StringToEnumConverterFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 

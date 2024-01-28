@@ -1,4 +1,4 @@
-package com.backend.together.domain.member.enums;
+package com.backend.together.global.enums;
 
 public enum Gender {
     MALE, FEMALE, NONE;

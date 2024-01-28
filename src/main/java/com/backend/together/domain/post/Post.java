@@ -2,8 +2,8 @@ package com.backend.together.domain.post;
 
 import com.backend.together.domain.category.Category;
 import com.backend.together.domain.comment.Comment;
-import com.backend.together.domain.member.enums.Gender;
-import com.backend.together.domain.member.enums.PostStatus;
+import com.backend.together.global.enums.Gender;
+import com.backend.together.global.enums.PostStatus;
 //import com.backend.domain.mapping.PostCategory;
 import com.backend.together.domain.post.mapping.PostHashtag;
 import com.backend.together.domain.post.common.BaseEntity;

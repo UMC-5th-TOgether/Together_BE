@@ -1,8 +1,8 @@
 package com.backend.together.domain.post.dto;
 
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.member.enums.Gender;
-import com.backend.together.domain.member.enums.PostStatus;
+import com.backend.together.global.enums.Gender;
+import com.backend.together.global.enums.PostStatus;
 //import com.backend.domain.post.PostImage;
 import com.backend.together.domain.post.Post;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

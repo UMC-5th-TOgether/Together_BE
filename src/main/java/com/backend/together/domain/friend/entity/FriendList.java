@@ -1,6 +1,6 @@
 package com.backend.together.domain.friend.entity;
 
-import com.backend.together.domain.enums.FriendStatus;
+import com.backend.together.global.enums.FriendStatus;
 import com.backend.together.domain.member.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
