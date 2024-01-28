@@ -20,8 +20,8 @@ public class Hashtag extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
     @Column(nullable = false, length = 40)
-    private String hashTag;
+    private String name;
 
     @OneToMany(mappedBy = "hashtag", cascade = CascadeType.ALL)
-    private List<PostHashtag> postList = new ArrayList<>();
+    private List<PostHashtag> postList;
 }

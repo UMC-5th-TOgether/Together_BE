@@ -1,6 +1,7 @@
 package com.backend.together.domain.post.dto;
 
 import com.backend.together.domain.category.Category;
+import com.backend.together.domain.post.mapping.PostHashtag;
 import com.backend.together.global.enums.Gender;
 import com.backend.together.global.enums.PostStatus;
 //import com.backend.domain.post.PostImage;
@@ -9,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
+
+import java.util.List;
 
 @Data
 @Getter
@@ -33,14 +36,13 @@ public class PostRequestDTO {
         @NotNull
         PostStatus status;
 
-        Long view;
 //        @JsonIgnore // 무한 루프 방지
 //        List<PostImage> postImageList;
 
         @NotNull // 바꿔야함
          Category category;
-//    @JsonIgnore
-//        List<PostHashtag> postHashtagList;
+
+        List<String> postHashtagList;
 
 
 
@@ -52,16 +54,15 @@ public class PostRequestDTO {
         this.personNum = post.getPersonNum();
         this.content = post.getContent();
         this.status = post.getStatus(); // enum
-        this.view = post.getView();
 
-        // Load the category to avoid Hibernate proxy issues
+
         Hibernate.initialize(post.getCategory());
         this.category = post.getCategory();
 
         ////    this.postImageList = post.getPostImageList();
 //        this.postImageList = postImageList != null ? new ArrayList<>(postImageList) : null;
         this.category = post.getCategory(); //enum
-////    this.postHashtagList = post.getPostHashtagList();
+//        this.postHashtagList = post.getPostHashtagList();
 //        this.postHashtagList = postHashtagList != null ? new ArrayList<>(postHashtagList) : null;
 
     }
@@ -77,10 +78,9 @@ public class PostRequestDTO {
                 .personNum(dto.getPersonNum())
                 .content(dto.getContent())
                 .status(dto.getStatus()) // enum
-                .view(dto.getView())
 //                .postImageList(dto.getPostImageList())
                 .category(dto.getCategory()) // enum
-//                .postHashtagList(dto.getPostHashtagList())
+//                .postHashtagList(dto.getPostHashtagList()) // 이렇게 받아도 외나?
                 .build();
     }
 
