@@ -82,32 +82,34 @@ public class MemberController {
         }
     }
 
-    // 계정(이메일) 찾기 *** 수정하기(전화번호 인증?)
+    // 계정 찾기 *** 실명인증으로(이름+폰번호)
     @PostMapping("/findEmail")
-    public ResponseEntity<ResponseDto> findEmailByNickname(@RequestBody MemberDto memberDto){
+    public ResponseEntity<ResponseDto> findEmailByNameAndPhoneNumber(@RequestBody MemberDto memberDto){
         try{
-            String email = memberService.findEmailByNickname(memberDto.getNickname());
+            String email = memberService.findEmailByNameAndPhoneNumber(memberDto.getName(), memberDto.getPhoneNumber());
             List<String> result=new ArrayList<>();
             result.add(email);
-            ResponseDto responseDto = ResponseDto.<String>builder().code(200).isSuccess(true).data(result).build();
+            ResponseDto responseDto = ResponseDto.<String>builder()
+                    .code(200).isSuccess(true).message("계정 찾기 성공").data(result).build();
             return ResponseEntity.ok().body(responseDto);
         }catch (Exception e){
             ResponseDto responseDto = ResponseDto.builder()
-                    .code(400).isSuccess(false).message(e.getMessage())
+                    .code(400).isSuccess(false).message("계정 찾기 실패 - "+e.getMessage())
                     .build();
             return ResponseEntity.badRequest().body(responseDto);
         }
 
     }
 
-    // 비밀번호 찾기
+    // 비밀번호 찾기 *** 이메일보내서 비밀번호 재설정하기
     @PostMapping("/findPassword")
     public ResponseEntity<ResponseDto> findPasswordByEmail(@RequestBody MemberDto memberDto){
         try{
             boolean isSuccess = memberService.findPasswordByEmail(memberDto.getEmail());
             List<Boolean> result=new ArrayList<>();
             result.add(isSuccess);
-            ResponseDto responseDto = ResponseDto.<Boolean>builder().code(200).isSuccess(true).message("비밀번호 찾기 성공 - 비밀번호를 변경해주세요.").data(result).build();
+            ResponseDto responseDto = ResponseDto.<Boolean>builder()
+                    .code(200).isSuccess(true).message("비밀번호 찾기 성공 - 이메일을 확인해주세요.").data(result).build();
             return ResponseEntity.ok().body(responseDto);
         }catch (Exception e){
             ResponseDto responseDto = ResponseDto.builder()
@@ -124,7 +126,8 @@ public class MemberController {
             boolean isSuccess = memberService.changePassword(memberDto.getEmail(),passwordEncoder.encode(memberDto.getPassword()));
             List<Boolean> result = new ArrayList<>();
             result.add(isSuccess);
-            ResponseDto responseDto = ResponseDto.<Boolean>builder().code(200).isSuccess(true).message("비밀번호 변경 성공").data(result).build();
+            ResponseDto responseDto = ResponseDto.<Boolean>builder()
+                    .code(200).isSuccess(true).message("비밀번호 변경 성공").data(result).build();
             return ResponseEntity.ok().body(responseDto);
         }catch (Exception e){
             ResponseDto responseDto = ResponseDto.builder()
@@ -135,7 +138,7 @@ public class MemberController {
     }
 
     //구글로 로그인
-    @GetMapping ("/google")
+    @GetMapping ("/login/google")
     public ResponseEntity<ResponseDto> googleLogin(@RequestParam String code){
         GoogleToken googleToken = memberService.getGoogleToken(code);
         GoogleProfile googleProfile = memberService.getGoogleProfile(googleToken);
@@ -167,7 +170,7 @@ public class MemberController {
     }
 
     // 카카오로 로그인
-    @GetMapping ("/kakao")
+    @GetMapping ("/login/kakao")
     public ResponseEntity<ResponseDto> kakaoLogin(@RequestParam String code){
         KakaoToken kakaoToken = memberService.getKakaoToken(code);
         KakaoProfile kakaoProfile = memberService.getKakaoProfile(kakaoToken);
@@ -201,7 +204,7 @@ public class MemberController {
     }
 
     // 네이버로 로그인
-    @GetMapping ("/naver")
+    @GetMapping ("/login/naver")
     public ResponseEntity<ResponseDto> naverLogin(@RequestParam String code) {
         NaverToken naverToken = memberService.getNaverToken(code);
         NaverProfile naverProfile = memberService.getNaverProfile(naverToken);

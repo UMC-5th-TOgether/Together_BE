@@ -15,12 +15,17 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -37,6 +42,9 @@ public class MemberService {
     @Autowired
     private TokenProvider tokenProvider;
     private DefaultMessageService messageService;
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private JavaMailSender javaMailSender;
 
 
     @Value("${spring.jwt.secretKey}")
@@ -61,6 +69,11 @@ public class MemberService {
     private String coolsms_api_key;
     @Value("${spring.coolsms.secret}")
     private String coolsms_api_secret;
+/*
+    @Autowired
+    public MemberService(JavaMailSender javaMailSender){
+        this.javaMailSender = javaMailSender;
+    }*/
 
     public void create(final MemberEntity memberEntity) throws Exception {
             if(memberRepository.existsByEmail(memberEntity.getEmail())){ // 이메일 중복 불가!
@@ -80,21 +93,36 @@ public class MemberService {
         // return userRepository.findByEmailAndPassword(email,password);
     }
 
-    // 닉네임으로 이메일(계정) 찾기
-    public String findEmailByNickname(final String nickname) throws Exception {
-        final Optional<MemberEntity> member = memberRepository.findByNickname(nickname);
+    // 이름과 전화번호(실명인증)으로 계정 찾기
+    public String findEmailByNameAndPhoneNumber(final String name, final String phoneNumber) throws Exception {
+        final Optional<MemberEntity> member = memberRepository.findByNameAndPhoneNumber(name,phoneNumber);
         if(member.isPresent()) {
             return member.get().getEmail();
         }
         else{
-            throw new Exception("가입된 회원이 없습니다.");
+            throw new Exception("해당 정보로 가입된 회원이 없습니다.");
         }
     }
 
-    // 이메일로 비밀번호 찾기
+    // 이메일로 비밀번호 찾기 *** 메일로 임시 비밀번호 보내기
     public boolean findPasswordByEmail(final String email) throws Exception {
-            final Optional<MemberEntity> member = memberRepository.findByEmail(email);
+        final Optional<MemberEntity> member = memberRepository.findByEmail(email);
         if(member.isPresent()) {
+            MemberEntity memberEntity = member.get();
+
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            String randomString = RandomStringUtils.randomAlphabetic(10);
+            String tempPassword = passwordEncoder.encode(randomString);
+
+            memberEntity.setPassword(tempPassword);
+            memberRepository.save(memberEntity);
+
+            simpleMailMessage.setTo(email);
+            simpleMailMessage.setFrom("together.umc@gmail.com");
+            simpleMailMessage.setSubject("[TOgether] 비밀번호 찾기 메일입니다.");
+            simpleMailMessage.setText("임시 비밀번호: "+randomString);
+            javaMailSender.send(simpleMailMessage);
+
             return true;
         }
         else{
