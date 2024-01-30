@@ -1,5 +1,6 @@
 package com.backend.together.global.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class ResponseDto<T> {
-    private int status;
-    private boolean success;
-    private String Message;
+    @JsonProperty(value="isSuccess")
+    private boolean isSuccess;
+    private int code;
+    private String message;
     private List<T> data;
 }
