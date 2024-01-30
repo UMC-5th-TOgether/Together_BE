@@ -22,27 +22,27 @@ import java.util.List;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PostRequestDTO {
 
-         Long id;
-        @NotNull
-         Long memberId;
-        @NotNull
-         String title;
-        @NotNull
-        Gender gender;
-        @NotNull
-         Integer personNum;
-        @NotNull
-         String content;
-        @NotNull
-        PostStatus status;
+    Long id;
+    @NotNull
+    Long memberId;
+    @NotNull
+    String title;
+    @NotNull
+    Gender gender;
+    @NotNull
+    Integer personNum;
+    @NotNull
+    String content;
+    @NotNull
+    PostStatus status;
 
 //        @JsonIgnore // 무한 루프 방지
 //        List<PostImage> postImageList;
 
-        @NotNull // 바꿔야함
-         Category category;
+    @NotNull // 바꿔야함
+    Category category;
 
-        List<String> postHashtagList;
+    List<String> postHashtagList;
 
 
 
@@ -77,7 +77,7 @@ public class PostRequestDTO {
                 .gender(dto.getGender()) // enum
                 .personNum(dto.getPersonNum())
                 .content(dto.getContent())
-                .status(dto.getStatus()) // enum
+                .status(dto.getStatus())
 //                .postImageList(dto.getPostImageList())
                 .category(dto.getCategory()) // enum
 //                .postHashtagList(dto.getPostHashtagList()) // 이렇게 받아도 외나?

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/matchings")
+@RequestMapping("/api/matching")
 public class MatchingController {
     private final MatchingServiceImpl matchingService;
     private final FriendServiceImpl friendService;

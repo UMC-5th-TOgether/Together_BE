@@ -1,6 +1,9 @@
 package com.backend.together.domain.post.controller;
 
+import com.backend.together.domain.block.Entity.Block;
+import com.backend.together.domain.block.service.BlockServiceImpl;
 import com.backend.together.domain.category.Category;
+import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.post.service.HashtagService;
 import com.backend.together.domain.post.service.PostHashtagService;
 import com.backend.together.global.apiPayload.ApiResponse;
@@ -34,10 +37,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
-    @Autowired
-    private PostServiceImpl service;
-    @Autowired
-            private PostHashtagService postHashtagService;
+    private final PostServiceImpl service;
+    private final BlockServiceImpl blockService;
+    private final PostHashtagService postHashtagService;
     StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 
     @GetMapping("/testRequestBody")
@@ -65,9 +67,20 @@ public class PostController {
     }
     @GetMapping
     public ResponseEntity<?> findAllPost(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.parseLong(authentication.getName());
+
         List<Post> entities = service.retrieve();
 
-        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        //차단한 유저의 post 필터링
+        List<Block> blockedList = blockService.getBlockedMember(userId);
+        List<Post> filteredPosts = entities.stream()
+                .filter(post -> blockedList.stream()
+                        .noneMatch(blocked -> post.getMemberId().equals(blocked.getBlocked().getMemberId())))
+                .toList();
+
+        List<PostResponseDTO> dtos = filteredPosts.stream().map(PostResponseDTO::new).toList();
+
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
 
@@ -184,7 +197,7 @@ public class PostController {
         Post newPost = PostRequestDTO.toEntity(requestDTO);
         // hashtag service에서 list return 해줌
         newPost.setMemberId(memberId);
-// service에서 확인해서 해시태그 잇으먄 그걸 반환. 없으면 새로 만들어서 넣어줌 ㅅ
+        // service에서 확인해서 해시태그 잇으먄 그걸 반환. 없으면 새로 만들어서 넣어줌 ㅅ
         service.createPost(newPost);
 // 이부분이 헷갈림 : createPost하면 참조값만 전달되는거??////////////////////////////////////
         postHashtagService.saveHashtag(newPost, requestDTO.getPostHashtagList());
