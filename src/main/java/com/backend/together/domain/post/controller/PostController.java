@@ -76,6 +76,7 @@ public class PostController {
     public ResponseEntity<?> findById(@RequestParam Long postId){
 
         Post entity = service.retrievePostById(postId).get();
+        updateView(entity);
 
         List<String> list = postHashtagService.getHashtagToStringByPost(entity);
         PostResponseDTO responseDTO = new PostResponseDTO(entity);
