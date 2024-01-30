@@ -100,8 +100,9 @@ public class CommentController {
     @DeleteMapping({"/id"})
     public ResponseEntity<?> deleteComment(Long id) {
         service.delete(id);
-
-        return ResponseEntity.ok().body(true);
+        ApiResponse<?> response = ApiResponse.successWithoutResult();
+        // 에러처리 필요
+        return ResponseEntity.ok().body(response);
     }
 
 }
