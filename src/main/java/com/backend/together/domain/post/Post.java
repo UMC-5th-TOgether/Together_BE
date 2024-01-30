@@ -6,7 +6,7 @@ import com.backend.together.global.enums.Gender;
 import com.backend.together.global.enums.PostStatus;
 //import com.backend.domain.mapping.PostCategory;
 import com.backend.together.domain.post.mapping.PostHashtag;
-import com.backend.together.domain.post.common.BaseEntity;
+import com.backend.together.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -33,14 +33,14 @@ public class Post extends BaseEntity {
     @Column(nullable = false, length = 40)
     private String title;
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NONE'")
     private Gender gender;
     @ColumnDefault("0")
     private Integer personNum;
     @Column(nullable = false, length = 40)
     private String content;
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ING'")
     private PostStatus status;
     // 게시글 조회수 추가 (24.01.13)
     @Column(nullable = false, length = 20)
@@ -48,29 +48,32 @@ public class Post extends BaseEntity {
     private Long view;
 
 
-//    @ManyToOne(fetch = FetchType.LAZY)
+    //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "category_id")
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "category_id")
 ////    @Column(nullable = false, length = 40)
-@Enumerated(EnumType.STRING)
-@Column(columnDefinition = "VARCHAR(15) DEFAULT 'ACTIVE'")
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'HOBBY'")
     private Category category;
-    
+
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<PostImage> postImageList = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<PostHashtag> postHashtagList = new ArrayList<>();
     // 24.01.20 추가
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
 
     // oneTomany member
     @PrePersist
-    public void prePersist(){
-        if(this.view ==null)
+    public void prePersist() {
+        if (this.view == null)
             this.view = 0L;
     }
 

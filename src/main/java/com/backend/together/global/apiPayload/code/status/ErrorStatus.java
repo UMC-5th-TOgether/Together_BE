@@ -20,9 +20,14 @@ public enum ErrorStatus implements BaseErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "해당 사용자가 없습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
     SELF_MATCHING_DECLINE(HttpStatus.BAD_REQUEST, "MEMBER4003", "자기자신과 매칭하는 것은 불가능합니다."),
+    SELF_REVIEW(HttpStatus.BAD_REQUEST, "MATCHING4002", "자기 자신에게 후기를 남기는 것은"),
     // 매칭 관련 에러
     MATCHING_NOT_FOUND(HttpStatus.BAD_REQUEST, "MATCHING4001", "존재하지 않는 매칭 이력입니다."),
     MATCHING_NOT_ACCEPT(HttpStatus.BAD_REQUEST, "MATCHING4002", "수락되지 않은 매칭입니다."),
+    // 리뷰 관련 에러
+    REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST, "REVIEW4001", "해당 리뷰가 존재하지 않습니다"),
+    // 차단 관련 에러
+    BLOCK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BLOCK4001", "해당 차단 정보가 존재하지 않습니다"),
     // 기타
     INVALID_APPROACH(HttpStatus.BAD_REQUEST, "ETC4001", "잘못된 접근입니다.");
 

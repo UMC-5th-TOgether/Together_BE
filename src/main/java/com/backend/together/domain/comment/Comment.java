@@ -2,10 +2,9 @@ package com.backend.together.domain.comment;
 
 import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.post.Post;
-import com.backend.together.domain.post.common.BaseEntity;
+import com.backend.together.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,7 @@ public class Comment extends BaseEntity {
 
 //    @ColumnDefault("FALSE")
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     @ManyToOne(fetch = LAZY)
@@ -41,6 +41,7 @@ public class Comment extends BaseEntity {
     private Comment parent;
 
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @Builder.Default
     private List<Comment> children = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)

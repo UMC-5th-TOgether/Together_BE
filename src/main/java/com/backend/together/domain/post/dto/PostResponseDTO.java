@@ -47,7 +47,8 @@ public class PostResponseDTO {
         @NotNull // 바꿔야함
         Category category;
 
-        List<String> postHashtagList =  new ArrayList<>();;
+        @Builder.Default
+        List<String> postHashtagList =  new ArrayList<>();
 
 
 
@@ -67,8 +68,7 @@ public class PostResponseDTO {
 
                 ////    this.postImageList = post.getPostImageList();
 //        this.postImageList = postImageList != null ? new ArrayList<>(postImageList) : null;
-                this.category = post.getCategory(); //enum
-//        this.postHashtagList = post.getPostHashtagList();
+            //        this.postHashtagList = post.getPostHashtagList();
 //        this.postHashtagList = postHashtagList != null ? new ArrayList<>(postHashtagList) : null;
 //                this.postHashtagList = getHashtag(post.getId());
 
@@ -79,4 +79,3 @@ public class PostResponseDTO {
 //        }
 
 }
-
