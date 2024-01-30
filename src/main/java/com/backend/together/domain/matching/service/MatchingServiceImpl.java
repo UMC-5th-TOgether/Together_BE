@@ -1,6 +1,6 @@
 package com.backend.together.domain.matching.service;
 
-import com.backend.together.domain.enums.MatchingStatus;
+import com.backend.together.global.enums.MatchingStatus;
 import com.backend.together.domain.matching.dto.MatchingRequestDTO;
 import com.backend.together.domain.matching.entity.Matching;
 import com.backend.together.domain.matching.repository.MatchingRepository;

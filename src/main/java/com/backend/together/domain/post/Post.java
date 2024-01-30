@@ -2,8 +2,8 @@ package com.backend.together.domain.post;
 
 import com.backend.together.domain.category.Category;
 import com.backend.together.domain.comment.Comment;
-import com.backend.together.domain.member.enums.Gender;
-import com.backend.together.domain.member.enums.PostStatus;
+import com.backend.together.global.enums.Gender;
+import com.backend.together.global.enums.PostStatus;
 //import com.backend.domain.mapping.PostCategory;
 import com.backend.together.domain.post.mapping.PostHashtag;
 import com.backend.together.domain.post.common.BaseEntity;
@@ -44,7 +44,9 @@ public class Post extends BaseEntity {
     private PostStatus status;
     // 게시글 조회수 추가 (24.01.13)
     @Column(nullable = false, length = 20)
+//    @ColumnDefault("0")
     private Long view;
+
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "category_id")
@@ -66,6 +68,10 @@ public class Post extends BaseEntity {
     private List<Comment> commentList = new ArrayList<>();
 
     // oneTomany member
-
+    @PrePersist
+    public void prePersist(){
+        if(this.view ==null)
+            this.view = 0L;
+    }
 
 }

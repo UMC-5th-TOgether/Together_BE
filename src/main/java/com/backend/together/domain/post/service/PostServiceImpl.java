@@ -1,8 +1,9 @@
 package com.backend.together.domain.post.service;
 
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.member.enums.Gender;
-import com.backend.together.domain.member.enums.PostStatus;
+import com.backend.together.domain.post.repository.HashtagRepository;
+import com.backend.together.global.enums.Gender;
+import com.backend.together.global.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.repository.PostRepository;
 import jakarta.persistence.EntityManager;
@@ -20,6 +21,10 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostRepository repository;
+    @Autowired
+    private HashtagRepository hashtagRepository;
+    @Autowired
+    private PostHashtagService postHashtagService;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -31,11 +36,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createPost(Post post) {
+    public void createPost(Post post) {
         //validate
-        return repository.save(post);
+
+
+        repository.save(post);
+
+
+
+
 
     }
+//    public void saveHashtag(Question question, List<String> tagNames) {
+//
+//        if(tagNames.size() == 0) return;
+//
+//        tagNames.stream()
+//                .map(hashtag ->
+//                        hashtagService.findByTagName(hashtag)
+//                                .orElseGet(() -> hashtagService.save(hashtag)))
+//                .forEach(hashtag -> mapHashtagToQuestion(question, hashtag));
+//    }
 
     @Override
     public void deletePost(Long postId) {
@@ -81,9 +102,11 @@ public class PostServiceImpl implements PostService {
         return postByGender;
     }
     public List<Post> retrievePostsByStatus(PostStatus status) {
-        List<Post> postByGender = repository.findPostByStatus(status);
-        return postByGender;
+        List<Post> postByStatus = repository.findPostByStatus(status);
+        return postByStatus;
     }
+
+
     /* Views Counting */
     /* Views Counting */
     @Override

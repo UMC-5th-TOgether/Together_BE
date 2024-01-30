@@ -2,10 +2,15 @@ package com.backend.together.domain.comment.service;
 
 import com.backend.together.domain.comment.Comment;
 import com.backend.together.domain.comment.repository.CommentRepository;
+import com.backend.together.global.apiPayload.code.status.ErrorStatus;
+import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -31,8 +36,33 @@ public class CommentServiceImpl implements CommentService {
         return repository.findCommentsWithParentFetch(postId);
 
     }
-    public Comment delete() {
-        return null;
+
+    public void delete(Long commentId) {
+
+        // parent is null, 나의 자식이 없음 -> 삭제\
+        // parent is null, 나의 자식이 있음 -> 문구만 변경
+        // parent is true, 나의 자식이 없음 -> 삭제
+        // parent is true, 나의 자식이 있음 -> 문구만 변경
+        // => 자식이 있으면 문구만 변경/자식이 없으면 삭제
+        Comment comment = repository.findCommentById(commentId)
+                .orElseThrow(); // 바꿔ㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓ()-> new CustomHandler(ErrorStatus._BAD_REQUEST)
+        if (comment.getId() != null) {
+            if (!comment.getChildren().isEmpty()) { //비어있지 안흐면
+                // 부모 엔터티의 자식 참조를 삭제
+//                comment.getChildren().forEach(child -> child.setParent(null));
+                // 부모 엔터티를 삭제하지 않고 상태만 변경
+                comment.changeIsDeleted(true);
+                // 변경된 상태를 저장
+                repository.save(comment);
+            } else { // 비워져 있으면
+                // 자식이 없으면 삭제
+                repository.delete(comment);
+            }
+        } else {
+            // ID가 null인 Comment 엔터티는 삭제할 수 없음
+            throw new CustomHandler(ErrorStatus._BAD_REQUEST);
+        }
+
     }
 
     @Override
@@ -44,4 +74,5 @@ public class CommentServiceImpl implements CommentService {
     public Comment retrieve() {
         return null;
     }
+
 }

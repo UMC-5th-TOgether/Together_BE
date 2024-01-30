@@ -1,6 +1,6 @@
 package com.backend.together.domain.friend.service;
 
-import com.backend.together.domain.enums.MatchingStatus;
+import com.backend.together.global.enums.MatchingStatus;
 import com.backend.together.domain.friend.entity.FriendList;
 import com.backend.together.domain.friend.repository.FriendListRepository;
 import com.backend.together.domain.matching.entity.Matching;

@@ -1,8 +1,11 @@
 package com.backend.together.domain.post.controller;
 
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.member.enums.Gender;
-import com.backend.together.domain.member.enums.PostStatus;
+import com.backend.together.domain.post.service.HashtagService;
+import com.backend.together.domain.post.service.PostHashtagService;
+import com.backend.together.global.apiPayload.ApiResponse;
+import com.backend.together.global.enums.Gender;
+import com.backend.together.global.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.dto.PostRequestDTO;
 import com.backend.together.domain.post.dto.PostResponseDTO;
@@ -13,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.backend.together.domain.post.converter.StringToEnumConverterFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,8 @@ import java.util.stream.Collectors;
 public class PostController {
     @Autowired
     private PostServiceImpl service;
+    @Autowired
+            private PostHashtagService postHashtagService;
     StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 
     @GetMapping("/testRequestBody")
@@ -63,26 +67,31 @@ public class PostController {
     public ResponseEntity<?> findAllPost(){
         List<Post> entities = service.retrieve();
 
-        List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
-        PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
-                data(dtos)
-                .build();
+        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
 
     }
     @GetMapping("/id")
     public ResponseEntity<?> findById(@RequestParam Long postId){
-        Optional<Post> entity = service.retrievePostById(postId);
 
-        Post post = entity.orElse(null);
-        if (post != null) {
-            updateView(post);
-        }
+        Post entity = service.retrievePostById(postId).get();
+        updateView(entity);
 
-        if(entity.isEmpty()) {
-            return ResponseEntity.badRequest().body(entity);
-        }
-        return ResponseEntity.ok().body(entity);
+        List<String> list = postHashtagService.getHashtagToStringByPost(entity);
+        PostResponseDTO responseDTO = new PostResponseDTO(entity);
+        responseDTO.setPostHashtagList(list);
+
+//        Post post = entity.orElse(null);
+//        if (post != null) {
+//            updateView(post);
+//        }
+//
+//        if(entity.isEmpty()) {
+//            return ResponseEntity.badRequest().body(entity);
+//        }
+        ApiResponse<PostResponseDTO> response = ApiResponse.onSuccess(responseDTO);
+        return ResponseEntity.ok().body(response);
 
     }
 
@@ -94,10 +103,9 @@ public class PostController {
     @GetMapping("/keyword")
     public ResponseEntity<?> findPostsByKeyword(@RequestParam String keyword) {
         List<Post> entities = service.retrievePostsByKeyword(keyword);
-        List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
-        PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder()
-                .data(dtos)
-                .build();
+
+        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
     }
     /*
@@ -108,10 +116,8 @@ public class PostController {
     @GetMapping("/member")
     public ResponseEntity<?> findPostsByMember(@RequestParam Long memberId) {
         List<Post> entities = service.retrievePostByMemberId(memberId);
-        List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
-        PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
-                data(dtos)
-                .build();
+        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
     }
     @GetMapping("/category")
@@ -124,10 +130,8 @@ public class PostController {
         Category categoryEnum = converter.convert(String.valueOf(category));
 
         List<Post> entities = service.retrievePostsByCategory(categoryEnum);
-        List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
-        PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
-                data(dtos)
-                .build();
+        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
 
 //        List<Post> entities = service.retrievePostsByCategory(category);
@@ -142,10 +146,8 @@ public class PostController {
         Gender genderEnum = converter.convert(String.valueOf(gender));
 
         List<Post> entities = service.retrievePostsByGender(genderEnum);
-        List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
-        PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
-                data(dtos)
-                .build();
+        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
 
     }
@@ -159,10 +161,8 @@ public class PostController {
 
         List<Post> entities = service.retrievePostsByStatus(statusEnum);
 
-        List<PostRequestDTO> dtos = entities.stream().map(PostRequestDTO::new).collect(Collectors.toList());
-        PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
-                data(dtos)
-                .build();
+        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
 
     }
@@ -176,28 +176,19 @@ public class PostController {
     * */
     @PostMapping // gender, memberid, category 해결해야함
     public ResponseEntity<?> createPost(@RequestBody PostRequestDTO requestDTO) {
-//        Post newPost = PostRequestDTO.toEntity(requestDTO);
-//        service.createPost(newPost);
-//        // 다시 조회하여 반환
-//        Optional<Post> savedPost = service.retrievePostById(newPost.getId()); // 예시로 findById 메서드를 사용했으며, 실제 사용하는 메서드에 따라 다를 수 있습니다.
-//        if(savedPost.isEmpty()) {
-//            Optional<PostRequestDTO> requestDTO1 = savedPost.stream().findFirst().map(PostRequestDTO::new);
-//
-//            return ResponseEntity.badRequest().body(requestDTO1);
-//        }
-//        List<PostRequestDTO> dtos = savedPost.stream().map(PostRequestDTO::new).collect(Collectors.toList());
-//        PostResponseDTO<PostRequestDTO> response = PostResponseDTO.<PostRequestDTO>builder().
-//                data(dtos)
-//                .build();
-//        return ResponseEntity.ok().body(response);
+
         // 사용자 ID 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long memberId = Long.parseLong(authentication.getName());
 
         Post newPost = PostRequestDTO.toEntity(requestDTO);
+        // hashtag service에서 list return 해줌
         newPost.setMemberId(memberId);
-
+// service에서 확인해서 해시태그 잇으먄 그걸 반환. 없으면 새로 만들어서 넣어줌 ㅅ
         service.createPost(newPost);
+// 이부분이 헷갈림 : createPost하면 참조값만 전달되는거??////////////////////////////////////
+        postHashtagService.saveHashtag(newPost, requestDTO.getPostHashtagList());
+
         // 다시 조회하여 반환
         Optional<Post> savedPost = service.retrievePostById(newPost.getId()); // 예시로 findById 메서드를 사용했으며, 실제 사용하는 메서드에 따라 다를 수 있습니다.
         if(savedPost.isEmpty()) {

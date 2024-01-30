@@ -1,6 +1,6 @@
 package com.backend.together.domain.matching.repository;
 
-import com.backend.together.domain.enums.MatchingStatus;
+import com.backend.together.global.enums.MatchingStatus;
 import com.backend.together.domain.matching.entity.Matching;
 import com.backend.together.domain.member.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
