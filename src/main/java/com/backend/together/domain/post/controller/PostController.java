@@ -1,7 +1,9 @@
 package com.backend.together.domain.post.controller;
 
+import com.backend.together.domain.block.Entity.Block;
+import com.backend.together.domain.block.service.BlockServiceImpl;
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.post.mapping.PostHashtag;
+
 import com.backend.together.domain.post.service.HashtagService;
 import com.backend.together.domain.post.service.PostHashtagService;
 import com.backend.together.global.apiPayload.ApiResponse;
@@ -36,16 +38,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
-    @Autowired
-    private PostServiceImpl service;
-    @Autowired
-            private PostHashtagService postHashtagService;
+
+    private final PostServiceImpl service;
+    private final BlockServiceImpl blockService;
+    private final PostHashtagService postHashtagService;
     StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 
-    @GetMapping("/testRequestBody")
-    public String testControllerRequestBody(@RequestBody TestRequestBodyDTO testRequestBodyDTO) {
-        return "Hello World" + testRequestBodyDTO.toString() + "Message: " + testRequestBodyDTO.getMessage();
-    }
     /*
     *
     * entities -> dtos -> responseDTO -> responseEntity
@@ -67,18 +65,52 @@ public class PostController {
     }
     @GetMapping
     public ResponseEntity<?> findAllPost(){
-        List<Post> entities = service.retrieve();
-        List<PostResponseDTO> dtos = new ArrayList<>();
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Long userId = Long.parseLong(authentication.getName());
+//
+//        List<Post> entities = service.retrieve();
+//        List<PostResponseDTO> dtos = new ArrayList<>();
+//
+//        for (Post post : entities) {
+//
+//            List<String> postHashtags = postHashtagService.getHashtagToStringByPost(post);
+//
+//            PostResponseDTO dto = new PostResponseDTO(post);
+//            dto.setPostHashtagList(postHashtags);
+//
+//            dtos.add(dto);
+//        }
+//
+//<<<<<<< HEAD
+//=======
+//        //차단한 유저의 post 필터링
+//        List<Block> blockedList = blockService.getBlockedMember(userId);
+//        List<Post> filteredPosts = entities.stream()
+//                .filter(post -> blockedList.stream()
+//                        .noneMatch(blocked -> post.getMemberId().equals(blocked.getBlocked().getMemberId())))
+//                .toList();
+//
+//        List<PostResponseDTO> dtos = filteredPosts.stream().map(PostResponseDTO::new).toList();
+//
+//>>>>>>> 1bddba26955310a40395bb41fd97ea858d067d6b
+//        ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
+//        return ResponseEntity.ok().body(response);
 
-        for (Post post : entities) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.parseLong(authentication.getName());
 
-            List<String> postHashtags = postHashtagService.getHashtagToStringByPost(post);
+        List<Block> blockedList = blockService.getBlockedMember(userId);
 
-            PostResponseDTO dto = new PostResponseDTO(post);
-            dto.setPostHashtagList(postHashtags);
-
-            dtos.add(dto);
-        }
+        List<PostResponseDTO> dtos = service.retrieve().stream()
+                .filter(post -> blockedList.stream()
+                        .noneMatch(blocked -> post.getMemberId().equals(blocked.getBlocked().getMemberId())))
+                .map(post -> {
+                    List<String> postHashtags = postHashtagService.getHashtagToStringByPost(post);
+                    PostResponseDTO dto = new PostResponseDTO(post);
+                    dto.setPostHashtagList(postHashtags);
+                    return dto;
+                })
+                .toList();
 
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
@@ -196,7 +228,7 @@ public class PostController {
         Post newPost = PostRequestDTO.toEntity(requestDTO);
         // hashtag service에서 list return 해줌
         newPost.setMemberId(memberId);
-// service에서 확인해서 해시태그 잇으먄 그걸 반환. 없으면 새로 만들어서 넣어줌 ㅅ
+        // service에서 확인해서 해시태그 잇으먄 그걸 반환. 없으면 새로 만들어서 넣어줌 ㅅ
         service.createPost(newPost);
 // 이부분이 헷갈림 : createPost하면 참조값만 전달되는거??////////////////////////////////////
         postHashtagService.saveHashtag(newPost, requestDTO.getPostHashtagList());

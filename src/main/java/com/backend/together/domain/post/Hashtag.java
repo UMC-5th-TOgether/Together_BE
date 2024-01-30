@@ -1,11 +1,10 @@
 package com.backend.together.domain.post;
 
 import com.backend.together.domain.post.mapping.PostHashtag;
-import com.backend.together.domain.post.common.BaseEntity;
+import com.backend.together.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
