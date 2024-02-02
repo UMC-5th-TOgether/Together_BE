@@ -7,7 +7,10 @@ import com.backend.together.domain.comment.dto.CommentResponseDTO;
 import com.backend.together.domain.comment.service.CommentService;
 import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.post.dto.PostResponseDTO;
+import com.backend.together.global.apiPayload.ApiErrResponse;
 import com.backend.together.global.apiPayload.ApiResponse;
+import com.backend.together.global.apiPayload.code.ErrorReasonDTO;
+import com.backend.together.global.apiPayload.code.status.ErrorStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -77,16 +80,29 @@ public class CommentController {
             dto.setParent(-1L);
         }
 
+
         Comment comment = converter.CommentToEntity(dto);
         service.create(comment);
-        return ResponseEntity.ok().body(dto);
+        CommentResponseDTO responseDTO = CommentResponseDTO.convertCommentToDTO(comment);
+
+
+        if (comment == null) {
+            ErrorStatus errorStatus = ErrorStatus._BAD_REQUEST;
+            ErrorReasonDTO errorReason = errorStatus.getReason();
+            ApiErrResponse<CommentResponseDTO> response = ApiErrResponse.onFailure(errorStatus.getCode(), errorReason.getMessage(), responseDTO);
+            return ResponseEntity.status(errorStatus.getHttpStatus()).body(response);
+        }
+
+        ApiResponse<CommentResponseDTO> successResponse = ApiResponse.onSuccess(responseDTO);
+        return ResponseEntity.ok().body(successResponse);
     }
 
     @DeleteMapping({"/id"})
     public ResponseEntity<?> deleteComment(Long id) {
         service.delete(id);
-
-        return ResponseEntity.ok().body(true);
+        ApiResponse<?> response = ApiResponse.successWithoutResult();
+        // 에러처리 필요
+        return ResponseEntity.ok().body(response);
     }
 
 }

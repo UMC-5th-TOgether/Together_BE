@@ -10,6 +10,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -44,8 +45,10 @@ public class CommentServiceImpl implements CommentService {
         // parent is true, 나의 자식이 없음 -> 삭제
         // parent is true, 나의 자식이 있음 -> 문구만 변경
         // => 자식이 있으면 문구만 변경/자식이 없으면 삭제
-        Comment comment = repository.findCommentById(commentId)
-                .orElseThrow(); // 바꿔ㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓ()-> new CustomHandler(ErrorStatus._BAD_REQUEST)
+        // CommentServiceImpl.java
+        Optional<Comment> optionalComment = repository.findById(commentId);
+        Comment comment = optionalComment.orElseThrow(() -> new NoSuchElementException("Comment not found with id: " + commentId));
+
         if (comment.getId() != null) {
             if (!comment.getChildren().isEmpty()) { //비어있지 안흐면
                 // 부모 엔터티의 자식 참조를 삭제

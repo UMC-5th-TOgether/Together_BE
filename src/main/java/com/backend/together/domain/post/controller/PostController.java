@@ -3,7 +3,7 @@ package com.backend.together.domain.post.controller;
 import com.backend.together.domain.block.Entity.Block;
 import com.backend.together.domain.block.service.BlockServiceImpl;
 import com.backend.together.domain.category.Category;
-import com.backend.together.domain.member.entity.MemberEntity;
+
 import com.backend.together.domain.post.service.HashtagService;
 import com.backend.together.domain.post.service.PostHashtagService;
 import com.backend.together.global.apiPayload.ApiResponse;
@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -37,15 +38,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
+
     private final PostServiceImpl service;
     private final BlockServiceImpl blockService;
     private final PostHashtagService postHashtagService;
     StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 
-    @GetMapping("/testRequestBody")
-    public String testControllerRequestBody(@RequestBody TestRequestBodyDTO testRequestBodyDTO) {
-        return "Hello World" + testRequestBodyDTO.toString() + "Message: " + testRequestBodyDTO.getMessage();
-    }
     /*
     *
     * entities -> dtos -> responseDTO -> responseEntity
@@ -67,19 +65,52 @@ public class PostController {
     }
     @GetMapping
     public ResponseEntity<?> findAllPost(){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Long userId = Long.parseLong(authentication.getName());
+//
+//        List<Post> entities = service.retrieve();
+//        List<PostResponseDTO> dtos = new ArrayList<>();
+//
+//        for (Post post : entities) {
+//
+//            List<String> postHashtags = postHashtagService.getHashtagToStringByPost(post);
+//
+//            PostResponseDTO dto = new PostResponseDTO(post);
+//            dto.setPostHashtagList(postHashtags);
+//
+//            dtos.add(dto);
+//        }
+//
+//<<<<<<< HEAD
+//=======
+//        //차단한 유저의 post 필터링
+//        List<Block> blockedList = blockService.getBlockedMember(userId);
+//        List<Post> filteredPosts = entities.stream()
+//                .filter(post -> blockedList.stream()
+//                        .noneMatch(blocked -> post.getMemberId().equals(blocked.getBlocked().getMemberId())))
+//                .toList();
+//
+//        List<PostResponseDTO> dtos = filteredPosts.stream().map(PostResponseDTO::new).toList();
+//
+//>>>>>>> 1bddba26955310a40395bb41fd97ea858d067d6b
+//        ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
+//        return ResponseEntity.ok().body(response);
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.parseLong(authentication.getName());
 
-        List<Post> entities = service.retrieve();
-
-        //차단한 유저의 post 필터링
         List<Block> blockedList = blockService.getBlockedMember(userId);
-        List<Post> filteredPosts = entities.stream()
+
+        List<PostResponseDTO> dtos = service.retrieve().stream()
                 .filter(post -> blockedList.stream()
                         .noneMatch(blocked -> post.getMemberId().equals(blocked.getBlocked().getMemberId())))
+                .map(post -> {
+                    List<String> postHashtags = postHashtagService.getHashtagToStringByPost(post);
+                    PostResponseDTO dto = new PostResponseDTO(post);
+                    dto.setPostHashtagList(postHashtags);
+                    return dto;
+                })
                 .toList();
-
-        List<PostResponseDTO> dtos = filteredPosts.stream().map(PostResponseDTO::new).toList();
 
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
@@ -203,11 +234,15 @@ public class PostController {
         postHashtagService.saveHashtag(newPost, requestDTO.getPostHashtagList());
 
         // 다시 조회하여 반환
-        Optional<Post> savedPost = service.retrievePostById(newPost.getId()); // 예시로 findById 메서드를 사용했으며, 실제 사용하는 메서드에 따라 다를 수 있습니다.
-        if(savedPost.isEmpty()) {
-            return ResponseEntity.badRequest().body(savedPost);
+        Post savedPost = service.retrievePostById(newPost.getId()).get(); // 예시로 findById 메서드를 사용했으며, 실제 사용하는 메서드에 따라 다를 수 있습니다.
+        List<String> hashtagList = postHashtagService.getHashtagToStringByPost(savedPost);
+        PostResponseDTO dto = new PostResponseDTO(savedPost);
+        dto.setPostHashtagList(hashtagList);
+        ApiResponse<PostResponseDTO> response = ApiResponse.onSuccess(dto);
+        if(dto == null) {
+            return ResponseEntity.badRequest().body(response);
         }
-        return ResponseEntity.ok().body(savedPost);
+        return ResponseEntity.ok().body(response);
 
     }
     /*
@@ -218,7 +253,8 @@ public class PostController {
     @DeleteMapping
     public ResponseEntity<?> deletePostById(@RequestParam Long postId) {
         service.deletePost(postId);
-        return ResponseEntity.ok().body(postId);
+        ApiResponse<?> response = ApiResponse.successWithoutResult();
+        return ResponseEntity.ok().body(response);
     }
 
 }
