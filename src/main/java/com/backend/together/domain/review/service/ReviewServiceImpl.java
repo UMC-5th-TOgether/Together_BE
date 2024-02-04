@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Transactional
 @RequiredArgsConstructor
@@ -21,8 +22,15 @@ public class ReviewServiceImpl implements ReviewService{
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
     @Override
-    public void postReview(ReviewRequestDTO.PostReviewDTO request, Long userId) {
-        MemberEntity member = memberRepository.findByMemberId(userId)
+    public Review postReview(ReviewRequestDTO.PostReviewDTO request, Long userId) {
+        if (Objects.equals(userId, request.getReviewedId())) {
+            throw new CustomHandler(ErrorStatus.SELF_REVIEW_DECLINE);
+        }
+
+        MemberEntity reviewer = memberRepository.findByMemberId(userId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        MemberEntity reviewed = memberRepository.findByMemberId(userId)
                 .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         ReviewEmotion emotion = switch (request.getEmotion()) {
@@ -31,8 +39,10 @@ public class ReviewServiceImpl implements ReviewService{
             default -> null;
         };
 
-        Review newReview = request.toEntity(member, emotion);
+        Review newReview = request.toEntity(reviewer, reviewed, emotion);
         reviewRepository.save(newReview);
+
+        return newReview;
     }
 
     @Override
@@ -46,7 +56,7 @@ public class ReviewServiceImpl implements ReviewService{
     public List<Review> getReviewListByMe(Long userId) {
         MemberEntity member = memberRepository.findByMemberId(userId)
                 .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        List<Review> reviewList = reviewRepository.findAllByWriter(member);
+        List<Review> reviewList = reviewRepository.findAllByReviewer(member);
 
         return reviewList;
     }
