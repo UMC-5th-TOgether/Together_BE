@@ -2,9 +2,8 @@ package com.backend.together.domain.post.controller;
 
 import com.backend.together.domain.block.Entity.Block;
 import com.backend.together.domain.block.service.BlockServiceImpl;
-import com.backend.together.domain.category.Category;
+import com.backend.together.global.enums.Category;
 
-import com.backend.together.domain.post.service.HashtagService;
 import com.backend.together.domain.post.service.PostHashtagService;
 import com.backend.together.global.apiPayload.ApiResponse;
 import com.backend.together.global.enums.Gender;
@@ -12,20 +11,16 @@ import com.backend.together.global.enums.PostStatus;
 import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.dto.PostRequestDTO;
 import com.backend.together.domain.post.dto.PostResponseDTO;
-import com.backend.together.domain.post.dto.TestRequestBodyDTO;
 import com.backend.together.domain.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.backend.together.domain.post.converter.StringToEnumConverterFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 /*
 * 추후 : @AuthenticationPrincipal

@@ -1,6 +1,7 @@
 package com.backend.together.domain.matching.dto;
 
 import com.backend.together.domain.matching.entity.Matching;
+import com.backend.together.domain.matching.entity.MatchingImage;
 import com.backend.together.domain.member.entity.MemberEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,15 +24,12 @@ public class MatchingRequestDTO {
         @NotBlank(message = "내용은 필수입니다.")
         private String content;
 
-        private String image; //이미지 url
-
         public Matching toEntity(MemberEntity receiver, MemberEntity sender) {
             return Matching.builder()
                     .receiver(receiver)
                     .sender(sender)
                     .title(title)
                     .content(content)
-                    .image(image)
                     .build();
         }
     }
@@ -43,5 +41,13 @@ public class MatchingRequestDTO {
     public static class UpdateMatchingStatusDTO {
         @NotNull
         private Long matchingId; //상태를 변경할 매칭의 아이디
+    }
+
+    //3. 이미지 저장
+    public static MatchingImage toMatchingImage(String imageUrl, Matching matching) {
+        return MatchingImage.builder()
+                .matching(matching)
+                .imageUrl(imageUrl)
+                .build();
     }
 }

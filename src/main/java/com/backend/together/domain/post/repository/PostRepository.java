@@ -1,7 +1,7 @@
 package com.backend.together.domain.post.repository;
 
 //import com.backend.domain.mapping.PostCategory;
-import com.backend.together.domain.category.Category;
+import com.backend.together.global.enums.Category;
 import com.backend.together.global.enums.Gender;
 import com.backend.together.global.enums.PostStatus;
 import com.backend.together.domain.post.Post;

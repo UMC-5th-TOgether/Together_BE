@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ReviewResponseDTO {
     @Builder
@@ -71,8 +70,8 @@ public class ReviewResponseDTO {
         private ReviewInfoDTO reviewInfo;
         private WriterInfoDTO writerInfo;
 
-        public static GetReviewDetailDTO getReviewDetail(Review review) {
-            ReviewInfoDTO reviewInfoDTO = ReviewInfoDTO.reviewInfo(review);
+        public static GetReviewDetailDTO getReviewDetail(Review review, List<String> reviewImages) {
+            ReviewInfoDTO reviewInfoDTO = ReviewInfoDTO.reviewInfo(review, reviewImages);
             WriterInfoDTO writerInfoDTO = WriterInfoDTO.writerInfo(review);
 
             return GetReviewDetailDTO.builder()
@@ -92,16 +91,16 @@ public class ReviewResponseDTO {
         private String content;
         private String emotion;
         private Integer score;
-        private String image;
+        private List<String> imageUrls;
 
-        public static ReviewInfoDTO reviewInfo(Review review) {
+        public static ReviewInfoDTO reviewInfo(Review review, List<String> reviewImages) {
             return ReviewInfoDTO.builder()
                     .reviewId(review.getId())
                     .title(review.getTitle())
                     .content(review.getContent())
                     .emotion(review.getEmotion().toString())
                     .score(review.getScore())
-                    .image(review.getImage())
+                    .imageUrls(reviewImages)
                     .build();
         }
     }
@@ -117,8 +116,8 @@ public class ReviewResponseDTO {
 
         public static WriterInfoDTO writerInfo(Review review) {
             return WriterInfoDTO.builder()
-                    .memberId(review.getWriter().getMemberId())
-                    .nickname(review.getWriter().getNickname())
+                    .memberId(review.getReviewer().getMemberId())
+                    .nickname(review.getReviewer().getNickname())
                     .build();
         }
     }
