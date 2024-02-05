@@ -1,5 +1,6 @@
 package com.backend.together.domain.member.dto;
 
+import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.member.entity.enums.Gender;
 import com.backend.together.domain.member.entity.enums.MemberStatus;
 import jakarta.persistence.Column;

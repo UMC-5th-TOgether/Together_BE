@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+/*
+* 24.2.5 생성일자 추가
+*
+*
+* */
 public class PostResponseDTO {
 
 //        @Autowired
@@ -50,6 +56,7 @@ public class PostResponseDTO {
         @Builder.Default
         List<String> postHashtagList =  new ArrayList<>();
 
+        // 24.2.5
 
 
         public PostResponseDTO(Post post) {
