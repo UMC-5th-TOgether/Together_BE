@@ -1,30 +1,41 @@
 package com.backend.together.domain.matching.controller;
 
+import com.amazonaws.util.CollectionUtils;
 import com.backend.together.domain.friend.service.FriendServiceImpl;
 import com.backend.together.domain.matching.dto.MatchingRequestDTO;
 import com.backend.together.domain.matching.dto.MatchingResponseDTO;
 import com.backend.together.domain.matching.entity.Matching;
+import com.backend.together.domain.matching.service.MatchingImageServiceImpl;
 import com.backend.together.domain.matching.service.MatchingServiceImpl;
 import com.backend.together.global.apiPayload.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/matching")
 public class MatchingController {
     private final MatchingServiceImpl matchingService;
+    private final MatchingImageServiceImpl matchingImageService;
     private final FriendServiceImpl friendService;
 
-    @PostMapping()
-    public ApiResponse<?> postMatching(@RequestBody @Valid MatchingRequestDTO.PostMatchingDTO request) {
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ApiResponse<?> postMatching(@RequestPart @Valid MatchingRequestDTO.PostMatchingDTO request, @RequestPart(required = false) List<MultipartFile> requestImages) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.parseLong(authentication.getName());
 
-        matchingService.postMatching(request, userId);
+        Matching newMatching = matchingService.postMatching(request, userId);
+
+        if (!CollectionUtils.isNullOrEmpty(requestImages)) {
+            requestImages.forEach(image -> matchingImageService.postMatchingImage(image, newMatching));
+        }
         return ApiResponse.successWithoutResult();
     }
 
@@ -51,7 +62,9 @@ public class MatchingController {
 
     @GetMapping("/detail/{matchingId}")
     public ApiResponse<MatchingResponseDTO.GetMatchingDetailDTO> getMatchingDetail(@PathVariable(name = "matchingId") Long matchingId){
-        Matching matchingDetail = matchingService.getMatchingDetail(matchingId);
-        return ApiResponse.onSuccess(MatchingResponseDTO.GetMatchingDetailDTO.getMatchingDetail(matchingDetail));
+        Matching matching = matchingService.getMatchingDetail(matchingId);
+        List<String> matchingImages = matchingImageService.getMatchingImages(matchingId);
+
+        return ApiResponse.onSuccess(MatchingResponseDTO.GetMatchingDetailDTO.getMatchingDetail(matching, matchingImages));
     }
 }

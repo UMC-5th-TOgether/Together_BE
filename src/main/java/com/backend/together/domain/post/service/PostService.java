@@ -1,6 +1,5 @@
 package com.backend.together.domain.post.service;
 
-import com.backend.together.domain.category.Category;
 import com.backend.together.domain.post.Post;
 
 import java.util.List;

@@ -1,11 +1,7 @@
 package com.backend.together.domain.post.dto;
 
-import com.backend.together.domain.category.Category;
+import com.backend.together.global.enums.Category;
 import com.backend.together.domain.post.Post;
-import com.backend.together.domain.post.repository.HashtagRepository;
-import com.backend.together.domain.post.repository.PostHashtagRepository;
-import com.backend.together.domain.post.service.HashtagService;
-import com.backend.together.domain.post.service.PostHashtagService;
 import com.backend.together.global.enums.Gender;
 import com.backend.together.global.enums.PostStatus;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 @Component

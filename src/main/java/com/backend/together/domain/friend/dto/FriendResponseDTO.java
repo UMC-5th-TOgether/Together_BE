@@ -36,7 +36,7 @@ public class FriendResponseDTO {
     @AllArgsConstructor
     public static class GetFollowingDTO{
         Long matchingId;
-        String profileImg;
+        //String profileImg;
         Long userId;
         String title;
         String status;
@@ -44,7 +44,7 @@ public class FriendResponseDTO {
         public static GetFollowingDTO getFollowingDTO(Matching matching){
             return GetFollowingDTO.builder()
                     .matchingId(matching.getId())
-                    .profileImg(matching.getImage())
+                    //.profileImg(matching.getImage())
                     .userId(matching.getReceiver().getMemberId())
                     .title(matching.getTitle())
                     .status(String.valueOf(matching.getStatus()))
@@ -78,7 +78,7 @@ public class FriendResponseDTO {
     @AllArgsConstructor
     public static class GetFollowerDTO{
         Long matchingId;
-        String profileImg;
+        //String profileImg;
         Long userId;
         String title;
         String status;
@@ -86,7 +86,7 @@ public class FriendResponseDTO {
         public static GetFollowerDTO getFollowerDTO(Matching matching){
             return GetFollowerDTO.builder()
                     .matchingId(matching.getId())
-                    .profileImg(matching.getImage())
+                    //.profileImg(matching.getImage())
                     .userId(matching.getReceiver().getMemberId())
                     .title(matching.getTitle())
                     .status(String.valueOf(matching.getStatus()))

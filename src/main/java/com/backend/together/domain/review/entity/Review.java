@@ -30,9 +30,11 @@ public class Review extends BaseEntity {
 
     private Integer score;
 
-    private String image;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewer_id", nullable = false)
+    private MemberEntity reviewer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private MemberEntity writer;
+    @JoinColumn(name = "reviewed_id", nullable = false)
+    private MemberEntity reviewed;
 }

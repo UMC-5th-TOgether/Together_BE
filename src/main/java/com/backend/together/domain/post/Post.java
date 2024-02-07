@@ -1,6 +1,6 @@
 package com.backend.together.domain.post;
 
-import com.backend.together.domain.category.Category;
+import com.backend.together.global.enums.Category;
 import com.backend.together.domain.comment.Comment;
 import com.backend.together.global.enums.Gender;
 import com.backend.together.global.enums.PostStatus;

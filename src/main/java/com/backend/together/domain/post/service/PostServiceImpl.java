@@ -1,6 +1,6 @@
 package com.backend.together.domain.post.service;
 
-import com.backend.together.domain.category.Category;
+import com.backend.together.global.enums.Category;
 import com.backend.together.domain.post.repository.HashtagRepository;
 import com.backend.together.global.enums.Gender;
 import com.backend.together.global.enums.PostStatus;
