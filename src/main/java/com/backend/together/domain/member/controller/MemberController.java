@@ -268,4 +268,24 @@ public class MemberController {
 
     }
 
+    // 이메일 중복
+    @GetMapping("/checkEmail")
+    public ResponseEntity<ResponseDto> checkEmail(@RequestParam(required = true) String email){
+        if (memberService.checkEmail(email)){
+            List<Boolean> result=new ArrayList<>();
+            result.add(true);
+            ResponseDto responseDTO = ResponseDto.<Boolean>builder()
+                    .code(200).isSuccess(true).message("사용 가능한 이메일입니다.").data(result).build();
+            return ResponseEntity.ok().body(responseDTO);
+        }
+        else{
+            List<Boolean> result=new ArrayList<>();
+            result.add(false);
+            ResponseDto responseDTO=ResponseDto.<Boolean>builder()
+                    .code(400).isSuccess(false).message("중복된 이메일입니다.").data(result).build();
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+
+    }
+
 }

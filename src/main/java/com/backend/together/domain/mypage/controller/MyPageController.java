@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,17 +87,18 @@ public class MyPageController {
     }
 
     // 프로필 이미지 변경
-    @PatchMapping("/changeImage")
-    public ResponseEntity<ResponseDto> changeImage(@RequestBody MemberDto memberDto, @AuthenticationPrincipal String memberId){
+    @PostMapping("/changeImage")
+    public ResponseEntity<ResponseDto> changeImage(@AuthenticationPrincipal String memberId, @RequestPart("file") MultipartFile image){
         try{
-            boolean isSuccess = myPageService.changeImage(memberId, memberDto.getImage());
+            boolean isSuccess = myPageService.changeImage(memberId, image);
             List<Boolean> result = new ArrayList<>();
             result.add(isSuccess);
-            ResponseDto responseDto = ResponseDto.<Boolean>builder().code(200).isSuccess(true).message("이미지 변경 성공").data(result).build();
+            ResponseDto responseDto = ResponseDto.<Boolean>builder().code(200).isSuccess(true).message("이미지 업로드 성공").data(result).build();
             return ResponseEntity.ok().body(responseDto);
+
         }catch (Exception e){
             ResponseDto responseDto = ResponseDto.builder()
-                    .code(400).isSuccess(false).message("이미지 변경 실패 - "+e.getMessage())
+                    .code(400).isSuccess(false).message("이미지 업로드 실패 - "+e.getMessage())
                     .build();
             return ResponseEntity.badRequest().body(responseDto);
         }
