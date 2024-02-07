@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,8 @@ public class PostResponseDTO {
         List<String> postHashtagList =  new ArrayList<>();
 
         // 24.2.5
-
+// 24.2.5
+        private LocalDate meetTime;
 
         public PostResponseDTO(Post post) {
                 this.id = post.getId();

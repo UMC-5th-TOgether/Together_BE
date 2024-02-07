@@ -54,7 +54,7 @@ public class Post extends BaseEntity {
     private Long view;
 
     // 24.2.5
-//    private LocalDate meetTime;
+    private LocalDate meetTime;
 
 
     //    @ManyToOne(fetch = FetchType.LAZY)
