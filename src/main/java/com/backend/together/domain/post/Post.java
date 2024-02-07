@@ -11,6 +11,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,10 @@ import java.util.List;
 @Setter
 //@Data
 //@Table(name = "Post")
+/*
+* 24.2.5 모집일자 추가
+*
+* */
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +52,9 @@ public class Post extends BaseEntity {
     @Column(nullable = false, length = 20)
 //    @ColumnDefault("0")
     private Long view;
+
+    // 24.2.5
+    private LocalDate meetTime;
 
 
     //    @ManyToOne(fetch = FetchType.LAZY)
