@@ -432,5 +432,16 @@ public class MemberService {
         SingleMessageSentResponse response = messageService.sendOne(new SingleMessageSendingRequest(message));
         return response;
     }
+
+    // 이메일 중복
+    public boolean checkEmail(String email) {
+        final Optional<MemberEntity> member = memberRepository.findByEmail(email);
+        if(member.isPresent()) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
     
 }
