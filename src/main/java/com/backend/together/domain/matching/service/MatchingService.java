@@ -7,5 +7,5 @@ public interface MatchingService {
     Matching postMatching(MatchingRequestDTO.PostMatchingDTO request, Long userId);
     void declineMatching(MatchingRequestDTO.UpdateMatchingStatusDTO request, Long userId);
     Matching acceptMatching(MatchingRequestDTO.UpdateMatchingStatusDTO request, Long userId);
-    Matching getMatchingDetail(Long matchingId);
+    Matching getMatchingDetail(Long matchingId, Long userId);
 }

@@ -5,11 +5,14 @@ import com.backend.together.domain.friend.entity.FriendList;
 import com.backend.together.domain.friend.service.FriendServiceImpl;
 import com.backend.together.domain.matching.entity.Matching;
 import com.backend.together.domain.member.entity.MemberEntity;
+import com.backend.together.domain.review.dto.ReviewResponseDTO;
+import com.backend.together.domain.review.service.ReviewServiceImpl;
 import com.backend.together.global.apiPayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +24,7 @@ import java.util.Objects;
 @RequestMapping("/api/friends")
 public class FriendController {
     private final FriendServiceImpl friendService;
+    private final ReviewServiceImpl reviewService;
     @GetMapping()
     public ApiResponse<FriendResponseDTO.GetFriendListDTO> getFriendList(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -61,5 +65,12 @@ public class FriendController {
 
         List<Matching> followerList = friendService.getFollowerList(userId);
         return ApiResponse.onSuccess(FriendResponseDTO.GetFollowerListDTO.getFollowerListDTO(followerList));
+    }
+
+    @GetMapping("/{friendId}/info")
+    public ApiResponse<?> getFriendInfo(@PathVariable(name = "friendId") Long friendId){
+        ReviewResponseDTO.AggregationDTO friendAggregationData = reviewService.getReviewAggregation(friendId);
+
+        return ApiResponse.onSuccess(FriendResponseDTO.GetFriendInfoDTO.getFriendInfoDTO(friendAggregationData));
     }
 }

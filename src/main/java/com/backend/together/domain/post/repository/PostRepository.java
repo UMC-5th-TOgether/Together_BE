@@ -1,10 +1,13 @@
 package com.backend.together.domain.post.repository;
 
 //import com.backend.domain.mapping.PostCategory;
+import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.global.enums.Category;
 import com.backend.together.global.enums.Gender;
 import com.backend.together.global.enums.PostStatus;
 import com.backend.together.domain.post.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +19,7 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> { // extends JpaRepository<Post, Long>
 
-    List<Post> findPostByMemberId(Long memberId);
+    List<Post> findPostByMember(MemberEntity member);
     List<Post> findPostByTitleContainingOrContentContaining(String keyword1, String keyword2);
 
     List<Post> findPostByCategory(Category category);
@@ -26,11 +29,11 @@ public interface PostRepository extends JpaRepository<Post, Long> { // extends J
     List<Post> findPostByStatus(PostStatus status);
 
     //    List<Post> findPostByPostHashtagList_Hashtag_Name(String hashtag);
-    Optional<Post> findPostById(Long postId);
+    Optional<Post> findById(Long id);
 
     List<Post> findPostByStatus(String status);
-    @Modifying
-    @Query("update Post p set p.view = p.view + 1 where p.id = :id")
-    int updateView(Long id);
 
+    Page<Post> findAllByCategory(Category category, Pageable pageable);
+
+    Page<Post> findAllByCategoryAndMemberNotIn(Category category, List<MemberEntity> blockedList, Pageable pageable);
 }

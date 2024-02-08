@@ -9,13 +9,15 @@ import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @Getter
 @Setter
@@ -29,9 +31,6 @@ import java.util.List;
 * */
 public class PostResponseDTO {
 
-//        @Autowired
-//        PostHashtagService postHashtagService;
-
         Long id;
         @NotNull
         Long memberId;
@@ -40,7 +39,8 @@ public class PostResponseDTO {
         @NotNull
         Gender gender;
         @NotNull
-        Integer personNum;
+        Integer personNumMin;
+        Integer personNumMax;
         @NotNull
         String content;
         @NotNull
@@ -60,10 +60,11 @@ public class PostResponseDTO {
 
         public PostResponseDTO(Post post) {
                 this.id = post.getId();
-                this.memberId = post.getMemberId();
+                this.memberId = post.getMember().getMemberId();
                 this.title = post.getTitle();
                 this.gender = post.getGender(); // enum
-                this.personNum = post.getPersonNum();
+                this.personNumMin = post.getPersonNumMin();
+                this.personNumMax = post.getPersonNumMax();
                 this.content = post.getContent();
                 this.status = post.getStatus(); // enum
                 this.view = post.getView();
@@ -71,6 +72,7 @@ public class PostResponseDTO {
                 // Load the category to avoid Hibernate proxy issues
                 Hibernate.initialize(post.getCategory());
                 this.category = post.getCategory();
+                this.meetTime = post.getMeetTime();
 
                 ////    this.postImageList = post.getPostImageList();
 //        this.postImageList = postImageList != null ? new ArrayList<>(postImageList) : null;
@@ -84,4 +86,52 @@ public class PostResponseDTO {
 //                return postHashtagService.getHashtagToStringByPost(postId);
 //        }
 
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class PagePostListDTO {
+                Integer pageNo;
+                Integer lastPage;
+                boolean isLast;
+                List<PagePostDTO> posts;
+
+                public static PagePostListDTO pagePostListDTO (Page<Post> post, Integer requestPage) {
+                        List<PagePostDTO> pagePostDTOS = post.stream().map(PagePostDTO::pagePostDTO).toList();
+                        return PagePostListDTO.builder()
+                                .posts(pagePostDTOS)
+                                .pageNo(requestPage)
+                                .lastPage(post.getTotalPages() - 1)
+                                .isLast(requestPage.equals(post.getTotalPages() - 1))
+                                .build();
+                }
+        }
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class PagePostDTO {
+                Long postId;
+                String title;
+                String writerNickname;
+                LocalDate accompaniedDate;
+                Integer personNumMin;
+                Integer personNumMax;
+                String gender;
+                List<String> hashtagList;
+
+                public static PagePostDTO pagePostDTO (Post post) {
+                        return PagePostDTO.builder()
+                                .postId(post.getId())
+                                .title(post.getTitle())
+                                .writerNickname(post.getMember().getNickname())
+                                .accompaniedDate(post.getMeetTime())
+                                .personNumMin(post.getPersonNumMin())
+                                .personNumMax(post.getPersonNumMax())
+                                .gender(post.getGender().toString())
+                                .hashtagList(post.getPostHashtagList().stream().map(hasgtag -> hasgtag.getHashtag().getName()).collect(Collectors.toList()))
+                                .build();
+                }
+        }
 }

@@ -121,4 +121,24 @@ public class ReviewResponseDTO {
                     .build();
         }
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AggregationDTO {
+        private MemberEntity friend;
+        private Long reviewAll;
+        private Long reviewEmotionYes;
+        private Long avgScore;
+
+        public static AggregationDTO aggregationDTO(MemberEntity member, Long reviewAll, Long reviewEmotionYes, Long avgScore){
+            return AggregationDTO.builder()
+                    .friend(member)
+                    .reviewAll(reviewAll)
+                    .reviewEmotionYes(reviewEmotionYes)
+                    .avgScore(avgScore)
+                    .build();
+        }
+    }
 }
