@@ -141,6 +141,14 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Override
+    public Page<Post> getPostByMemberId(Long memberId, Integer page) {
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        return repository.findAllByMember(member, PageRequest.of(page, 4, Sort.by("createdAt").descending()));
+    }
+
     private Sort getSort(String sortBy) {
         return switch (sortBy) {
             case "popularity" -> Sort.by("view").descending();

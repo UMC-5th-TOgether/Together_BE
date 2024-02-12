@@ -36,4 +36,6 @@ public interface PostRepository extends JpaRepository<Post, Long> { // extends J
     Page<Post> findAllByCategory(Category category, Pageable pageable);
 
     Page<Post> findAllByCategoryAndMemberNotIn(Category category, List<MemberEntity> blockedList, Pageable pageable);
+
+    Page<Post> findAllByMember(MemberEntity member, Pageable pageable);
 }

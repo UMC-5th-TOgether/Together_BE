@@ -23,6 +23,8 @@ public interface PostService {
 
     Page<Post> getPostByCategorySort(String category, String sortBy, Integer page);
 
+    Page<Post> getPostByMemberId(Long memberId, Integer page);
+
             // ...해시태그 검색, 카테고리 검색 등.....
 
 

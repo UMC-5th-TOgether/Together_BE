@@ -10,6 +10,9 @@ import com.backend.together.global.apiPayload.code.status.ErrorStatus;
 import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 import com.backend.together.global.enums.ReviewEmotion;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,13 +50,6 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public MemberEntity getMemberInfo(Long userId) {
-        MemberEntity member = memberRepository.findByMemberId(userId)
-                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        return member;
-    }
-
-    @Override
     public List<Review> getReviewListByMe(Long userId) {
         MemberEntity member = memberRepository.findByMemberId(userId)
                 .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
@@ -82,6 +78,14 @@ public class ReviewServiceImpl implements ReviewService{
         Long roundAvgScore = Math.round(avgScore);
 
         return ReviewResponseDTO.AggregationDTO.aggregationDTO(member, reviewAll, reviewEmotionYes, roundAvgScore);
+    }
+
+    @Override
+    public Page<Review> getReviewByMemberId(Long memberId, Integer page) {
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        return reviewRepository.findAllByReviewed(member, PageRequest.of(page, 4, Sort.by("createdAt").descending()));
     }
 
 

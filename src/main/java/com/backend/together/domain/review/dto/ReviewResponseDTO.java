@@ -10,22 +10,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 public class ReviewResponseDTO {
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GetUserInfoDTO {
-        private Long userId;
-        private String nickname;
-        //private String gender;
-        private Integer age;
-        public static GetUserInfoDTO getUserInfo(MemberEntity member) {
-            return GetUserInfoDTO.builder()
-                    .userId(member.getMemberId())
-                    .nickname(member.getNickname())
-                    .build();
-        }
-    }
 
     @Builder
     @Getter

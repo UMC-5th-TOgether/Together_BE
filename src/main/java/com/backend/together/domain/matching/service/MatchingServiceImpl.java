@@ -2,7 +2,6 @@ package com.backend.together.domain.matching.service;
 
 import com.backend.together.domain.matching.dto.MatchingRequestDTO;
 import com.backend.together.domain.matching.entity.Matching;
-import com.backend.together.domain.matching.repository.MatchingImageRepository;
 import com.backend.together.domain.matching.repository.MatchingRepository;
 import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.member.repository.MemberRepository;
@@ -75,7 +74,7 @@ public class MatchingServiceImpl implements MatchingService{
         if (!matching.getSender().getMemberId().equals(userId) && !matching.getReceiver().getMemberId().equals(userId)) {
             throw new CustomHandler(ErrorStatus.INVALID_APPROACH); // 내가 sender/receiver가 아닌 매칭 접근 불가
 
-        } else if (matching.getReceiver().getMemberId().equals(userId)) {
+        } else if (matching.getReceiver().getMemberId().equals(userId) && matching.getIsRead().equals(false)) {
             matching.matchingRead(true); //조회한 사람이자 받는 사람이 나이면 '읽음'으로 표시한다
         }
 

@@ -10,4 +10,5 @@ public interface FriendService {
     List<Matching> getFollowerList(Long userId);
     void addNewFriend(Matching matching);
     List<FriendList> getRelationshipList(Long userId);
+    void deleteFriend(Long userId, Long memberId);
 }

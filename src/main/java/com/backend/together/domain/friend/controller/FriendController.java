@@ -1,20 +1,25 @@
 package com.backend.together.domain.friend.controller;
 
+import com.backend.together.domain.comment.Comment;
+import com.backend.together.domain.comment.service.CommentServiceImpl;
 import com.backend.together.domain.friend.dto.FriendResponseDTO;
 import com.backend.together.domain.friend.entity.FriendList;
 import com.backend.together.domain.friend.service.FriendServiceImpl;
 import com.backend.together.domain.matching.entity.Matching;
 import com.backend.together.domain.member.entity.MemberEntity;
+import com.backend.together.domain.post.Post;
+import com.backend.together.domain.post.service.PostServiceImpl;
 import com.backend.together.domain.review.dto.ReviewResponseDTO;
+import com.backend.together.domain.review.entity.Review;
 import com.backend.together.domain.review.service.ReviewServiceImpl;
 import com.backend.together.global.apiPayload.ApiResponse;
+import com.backend.together.global.apiPayload.code.status.ErrorStatus;
+import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +30,8 @@ import java.util.Objects;
 public class FriendController {
     private final FriendServiceImpl friendService;
     private final ReviewServiceImpl reviewService;
+    private final PostServiceImpl postService;
+    private final CommentServiceImpl commentService;
     @GetMapping()
     public ApiResponse<FriendResponseDTO.GetFriendListDTO> getFriendList(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -72,5 +79,60 @@ public class FriendController {
         ReviewResponseDTO.AggregationDTO friendAggregationData = reviewService.getReviewAggregation(friendId);
 
         return ApiResponse.onSuccess(FriendResponseDTO.GetFriendInfoDTO.getFriendInfoDTO(friendAggregationData));
+    }
+
+    @GetMapping("/{friendId}/post")
+    public ApiResponse<?> getFriendPost(@PathVariable(name = "friendId") Long friendId, @RequestParam(defaultValue = "0") Integer page){
+        if (page < 0) {
+            throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
+        }
+
+        Page<Post> friendPosts = postService.getPostByMemberId(friendId, page);
+
+        if (page >= friendPosts.getTotalPages()) {
+            throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
+        }
+
+        return ApiResponse.onSuccess(FriendResponseDTO.FriendPostListDTO.friendPostListDTO(friendPosts, page));
+    }
+
+    @GetMapping("/{friendId}/comment")
+    public ApiResponse<?> getFriendComment(@PathVariable(name = "friendId") Long friendId, @RequestParam(defaultValue = "0") Integer page){
+        if (page < 0) {
+            throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
+        }
+
+        Page<Comment> friendComments = commentService.getCommentByMemberId(friendId, page);
+
+        if (page >= friendComments.getTotalPages()) {
+            throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
+        }
+
+        return ApiResponse.onSuccess(FriendResponseDTO.FriendCommentListDTO.friendCommentListDTO(friendComments, page));
+    }
+
+    @GetMapping("/{friendId}/review")
+    public ApiResponse<?> getFriendReview(@PathVariable(name = "friendId") Long friendId, @RequestParam(defaultValue = "0") Integer page){
+        if (page < 0) {
+            throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
+        }
+
+        Page<Review> friendReviews = reviewService.getReviewByMemberId(friendId, page);
+
+        if (page >= friendReviews.getTotalPages()) {
+            throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
+        }
+
+        return ApiResponse.onSuccess(FriendResponseDTO.FriendReviewListDTO.friendReviewListDTO(friendReviews, page));
+    }
+
+    @DeleteMapping("/{friendId}")
+    public ApiResponse<?> deleteFriend(@PathVariable(name = "friendId") Long friendId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.parseLong(authentication.getName());
+
+        friendService.deleteFriend(userId, friendId);
+
+        return ApiResponse.successWithoutResult();
     }
 }

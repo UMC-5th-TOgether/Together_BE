@@ -1,7 +1,6 @@
 package com.backend.together.domain.review.controller;
 
 import com.amazonaws.util.CollectionUtils;
-import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.review.dto.ReviewRequestDTO;
 import com.backend.together.domain.review.dto.ReviewResponseDTO;
 import com.backend.together.domain.review.entity.Review;
@@ -34,15 +33,6 @@ public class ReviewController {
             requestImages.forEach(image -> reviewImageService.postReviewImage(image, newReview));
         }
         return ApiResponse.successWithoutResult();
-    }
-
-    @GetMapping("/write") //리뷰 작성하는 화면에서 멤버 정보를 불러오는 api
-    public ApiResponse<?> getMemberInfo(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = Long.parseLong(authentication.getName());
-
-        MemberEntity member = reviewService.getMemberInfo(userId);
-        return ApiResponse.onSuccess(ReviewResponseDTO.GetUserInfoDTO.getUserInfo(member));
     }
 
     @GetMapping() //내가 쓴 리뷰

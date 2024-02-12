@@ -35,6 +35,8 @@ public enum ErrorStatus implements BaseErrorCode {
     // 차단 관련 에러
     BLOCK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BLOCK4001", "해당 차단 정보가 존재하지 않습니다."),
     SELF_BLOCK_DECLINE(HttpStatus.BAD_REQUEST, "BLOCK4002", "자신을 차단하는 것은 불가능합니다."),
+    // 친구 관련 에러
+    FRIEND_NOT_EXIST(HttpStatus.BAD_REQUEST, "FRIEND4001", "요청한 유저는 친구가 아닙니다."),
     // 기타
     INVALID_APPROACH(HttpStatus.BAD_REQUEST, "ETC4001", "잘못된 접근입니다.");
 

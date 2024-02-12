@@ -1,12 +1,16 @@
 package com.backend.together.domain.friend.dto;
 
+import com.backend.together.domain.comment.Comment;
 import com.backend.together.domain.matching.entity.Matching;
 import com.backend.together.domain.member.entity.MemberEntity;
+import com.backend.together.domain.post.Post;
 import com.backend.together.domain.review.dto.ReviewResponseDTO;
+import com.backend.together.domain.review.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -189,6 +193,121 @@ public class FriendResponseDTO {
                     .age(member.getAge())
                     .station(member.getStation())
                     .profileMessage(member.getProfileMessage())
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class FriendPostListDTO {
+        Integer pageNo;
+        Integer lastPage;
+        boolean isLast;
+        List<FriendResponseDTO.FriendPostDTO> posts;
+
+        public static FriendResponseDTO.FriendPostListDTO friendPostListDTO (Page<Post> post, Integer requestPage) {
+            List<FriendResponseDTO.FriendPostDTO> pagePostDTOS = post.stream().map(FriendResponseDTO.FriendPostDTO::friendPostDTO).toList();
+            return FriendResponseDTO.FriendPostListDTO.builder()
+                    .posts(pagePostDTOS)
+                    .pageNo(requestPage)
+                    .lastPage(post.getTotalPages() - 1)
+                    .isLast(requestPage.equals(post.getTotalPages() - 1))
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class FriendPostDTO {
+        Long postId;
+        String title;
+        String status;
+
+        public static FriendResponseDTO.FriendPostDTO friendPostDTO (Post post) {
+            return FriendResponseDTO.FriendPostDTO.builder()
+                    .postId(post.getId())
+                    .title(post.getTitle())
+                    .status(post.getStatus().toString())
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class FriendCommentListDTO {
+        Integer pageNo;
+        Integer lastPage;
+        boolean isLast;
+        List<FriendResponseDTO.FriendCommentDTO> comments;
+
+        public static FriendResponseDTO.FriendCommentListDTO friendCommentListDTO (Page<Comment> comment, Integer requestPage) {
+            List<FriendResponseDTO.FriendCommentDTO> pageCommentDTOS = comment.stream().map(FriendResponseDTO.FriendCommentDTO::friendCommentDTO).toList();
+            return FriendResponseDTO.FriendCommentListDTO.builder()
+                    .comments(pageCommentDTOS)
+                    .pageNo(requestPage)
+                    .lastPage(comment.getTotalPages() - 1)
+                    .isLast(requestPage.equals(comment.getTotalPages() - 1))
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class FriendCommentDTO {
+        Long commentId;
+        String content;
+        Long postId;
+
+        public static FriendResponseDTO.FriendCommentDTO friendCommentDTO (Comment comment) {
+            return FriendResponseDTO.FriendCommentDTO.builder()
+                    .commentId(comment.getId())
+                    .content(comment.getContent())
+                    .postId(comment.getPost().getId())
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class FriendReviewListDTO {
+        Integer pageNo;
+        Integer lastPage;
+        boolean isLast;
+        List<FriendResponseDTO.FriendReviewDTO> reviews;
+
+        public static FriendResponseDTO.FriendReviewListDTO friendReviewListDTO (Page<Review> reviews, Integer requestPage) {
+            List<FriendResponseDTO.FriendReviewDTO> pageReviewDTOS = reviews.stream().map(FriendResponseDTO.FriendReviewDTO::friendReviewDTO).toList();
+            return FriendResponseDTO.FriendReviewListDTO.builder()
+                    .reviews(pageReviewDTOS)
+                    .pageNo(requestPage)
+                    .lastPage(reviews.getTotalPages() - 1)
+                    .isLast(requestPage.equals(reviews.getTotalPages() - 1))
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class FriendReviewDTO {
+        Long reviewId;
+        String title;
+
+        public static FriendResponseDTO.FriendReviewDTO friendReviewDTO (Review review) {
+            return FriendResponseDTO.FriendReviewDTO.builder()
+                    .reviewId(review.getId())
+                    .title(review.getTitle())
                     .build();
         }
     }
