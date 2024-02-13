@@ -90,8 +90,9 @@ public class PostController {
         service.updateView(entity);
 
         List<String> list = postHashtagService.getHashtagToStringByPost(entity);
-        MemberEntity member = memberRepository.findById(entity.getId()).get();
-        PostResponseDTO responseDTO =PostResponseDTO.convertPostToDTO(entity, member);
+        MemberEntity member = entity.getMember();
+
+        PostResponseDTO responseDTO = PostResponseDTO.convertPostToDTO(entity, member);
         responseDTO.setPostHashtagList(list);
 
         return ApiResponse.onSuccess(responseDTO);
