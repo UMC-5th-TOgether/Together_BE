@@ -119,7 +119,7 @@ public class MyPageController {
 
         Page<Post> myPosts = postService.getPostByMemberId(Long.parseLong(memberId), page);
 
-        if (page >= myPosts.getTotalPages()) {
+        if (page >= myPosts.getTotalPages() && page > 0) {
             throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
         }
 
@@ -134,7 +134,7 @@ public class MyPageController {
 
         Page<Comment> myComment = commentService.getCommentByMemberId(Long.parseLong(memberId), page);
 
-        if (page >= myComment.getTotalPages()) {
+        if (page >= myComment.getTotalPages() && page > 0) {
             throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
         }
 
@@ -149,7 +149,7 @@ public class MyPageController {
 
         Page<Review> myReview = reviewService.getReviewByMemberId(Long.parseLong(memberId), page);
 
-        if (page >= myReview.getTotalPages()) {
+        if (page >= myReview.getTotalPages() && page > 0) {
             throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
         }
 
