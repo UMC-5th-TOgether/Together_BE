@@ -97,5 +97,19 @@ public class MyPageService {
             throw new Exception("가입된 회원이 없습니다.");
         }
     }
+    // 프로필 메세지 변경하기
+    public boolean changeProfileMessage(String memberId, String profileMessage) throws Exception {
+        Optional<MemberEntity> member = memberRepository.findById(Long.parseLong(memberId));
+
+        if(member.isPresent()) {
+            MemberEntity memberEntity = member.get();
+            memberEntity.setProfileMessage(profileMessage);
+            memberRepository.save(memberEntity);
+            return true;
+        }
+        else {
+            throw new Exception("가입된 회원이 없습니다.");
+        }
+    }
 
 }
