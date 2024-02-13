@@ -111,6 +111,23 @@ public class MyPageController {
         }
     }
 
+    // 프로필 메세지 변경
+    @PatchMapping("/changeProfileMessage")
+    public ResponseEntity<ResponseDto> changeProfileMessage(@RequestBody MyPageResponseDTO.GetMyProfileDTO myInfoDto, @AuthenticationPrincipal String memberId){
+        try{
+            boolean isSuccess = myPageService.changeProfileMessage(memberId, myInfoDto.getProfileMessage());
+            List<Boolean> result = new ArrayList<>();
+            result.add(isSuccess);
+            ResponseDto responseDto = ResponseDto.<Boolean>builder().code(200).isSuccess(true).message("프로필 메세지 변경 성공").data(result).build();
+            return ResponseEntity.ok().body(responseDto);
+        }catch (Exception e){
+            ResponseDto responseDto = ResponseDto.builder()
+                    .code(400).isSuccess(false).message("프로필 메세지 변경 실패 - "+e.getMessage())
+                    .build();
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
+
     @GetMapping("/myPost")
     public ApiResponse<?> myPagePost(@AuthenticationPrincipal String memberId, @RequestParam(defaultValue = "0") Integer page) {
         if (page < 0) {
