@@ -39,5 +39,9 @@ public class Matching extends BaseEntity {
     @ColumnDefault(" 'PENDING' ")
     private MatchingStatus status;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean isRead;
+
     public void updateMatchingStatus(MatchingStatus matchingStatus) {this.status = matchingStatus;}
+    public void matchingRead(Boolean isRead) {this.isRead = isRead;}
 }

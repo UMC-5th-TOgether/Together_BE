@@ -13,4 +13,5 @@ public interface FriendListRepository extends JpaRepository<FriendList, Long> {
     List<FriendList> findByMemberId(@Param("id") Long id);
 
     FriendList findByMember1AndMember2(MemberEntity member1, MemberEntity member2);
+
 }

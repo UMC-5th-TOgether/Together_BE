@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MatchingResponseDTO {
@@ -34,18 +35,20 @@ public class MatchingResponseDTO {
     @AllArgsConstructor
     public static class MatchingInfoDTO{
         Long matchingId;
-        String matchingStatus;
         String title;
         String content;
         List<String> images;
+        LocalDateTime sendDate;
+        Boolean isRead;
 
         public static MatchingInfoDTO matchingInfo(Matching matching, List<String> imageUrls){
             return MatchingInfoDTO.builder()
                     .matchingId(matching.getId())
-                    .matchingStatus(matching.getStatus().toString())
                     .title(matching.getTitle())
                     .content(matching.getContent())
                     .images(imageUrls)
+                    .sendDate(matching.getCreatedAt())
+                    .isRead(matching.getIsRead())
                     .build();
         }
     }
@@ -56,13 +59,15 @@ public class MatchingResponseDTO {
     @AllArgsConstructor
     public static class SenderInfoDTO{
         Long userId;
+        String profileImage;
         String nickname;
-        //String gender;
+        String gender;
         String age;
 
         public static SenderInfoDTO senderInfo(Matching matching){
             return SenderInfoDTO.builder()
                     .userId(matching.getSender().getMemberId())
+                    .profileImage(matching.getSender().getImage())
                     .nickname(matching.getSender().getNickname())
                     .age(matching.getSender().getAge())
                     .build();
