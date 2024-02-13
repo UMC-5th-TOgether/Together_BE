@@ -89,7 +89,7 @@ public class FriendController {
 
         Page<Post> friendPosts = postService.getPostByMemberId(friendId, page);
 
-        if (page >= friendPosts.getTotalPages()) {
+        if (page >= friendPosts.getTotalPages() && page > 0) {
             throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
         }
 
@@ -104,7 +104,7 @@ public class FriendController {
 
         Page<Comment> friendComments = commentService.getCommentByMemberId(friendId, page);
 
-        if (page >= friendComments.getTotalPages()) {
+        if (page >= friendComments.getTotalPages() && page > 0) {
             throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
         }
 
@@ -119,7 +119,7 @@ public class FriendController {
 
         Page<Review> friendReviews = reviewService.getReviewByMemberId(friendId, page);
 
-        if (page >= friendReviews.getTotalPages()) {
+        if (page >= friendReviews.getTotalPages() && page > 0) {
             throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
         }
 
