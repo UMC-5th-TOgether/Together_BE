@@ -1,15 +1,19 @@
 package com.backend.together.domain.post.dto;
 
+import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.global.enums.Category;
 import com.backend.together.global.enums.Gender;
 import com.backend.together.global.enums.PostStatus;
 //import com.backend.domain.post.PostImage;
 import com.backend.together.domain.post.Post;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.Hibernate;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -21,19 +25,24 @@ import java.util.List;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PostRequestDTO {
 
-    Long id;
     @NotNull
-    Long memberId;
-    @NotNull
+    @Size(max = 40)
     String title;
+
     @NotNull
     Gender gender;
+
+    @Min(1)
+    Integer personNumMin;
+
+    Integer personNumMax;
+
     @NotNull
-    Integer personNum;
-    @NotNull
+    @Size(max = 255)
     String content;
+
     @NotNull
-    PostStatus status;
+    LocalDate meetTime;
 
 //        @JsonIgnore // 무한 루프 방지
 //        List<PostImage> postImageList;
@@ -44,39 +53,17 @@ public class PostRequestDTO {
     List<String> postHashtagList;
 
 
-
-    public PostRequestDTO(Post post) {
-        this.id = post.getId();
-        this.memberId = post.getMemberId();
-        this.title = post.getTitle();
-        this.gender = post.getGender(); // enum
-        this.personNum = post.getPersonNum();
-        this.content = post.getContent();
-        this.status = post.getStatus(); // enum
-
-
-        Hibernate.initialize(post.getCategory());
-        this.category = post.getCategory();
-
-        ////    this.postImageList = post.getPostImageList();
-//        this.postImageList = postImageList != null ? new ArrayList<>(postImageList) : null;
-        this.category = post.getCategory(); //enum
-//        this.postHashtagList = post.getPostHashtagList();
-//        this.postHashtagList = postHashtagList != null ? new ArrayList<>(postHashtagList) : null;
-
-    }
-
-    // member
-
-    public static Post toEntity(final PostRequestDTO dto) {
+    public static Post toEntity(PostRequestDTO dto, MemberEntity member) {
         return Post.builder()
-
-                //.memberId(dto.getMemberId())
+                .member(member)
                 .title(dto.getTitle())
                 .gender(dto.getGender()) // enum
-                .personNum(dto.getPersonNum())
+                .personNumMin(dto.getPersonNumMin())
+                .personNumMax(dto.getPersonNumMax())
                 .content(dto.getContent())
-                .status(dto.getStatus())
+                .meetTime(dto.getMeetTime())
+                .status(PostStatus.ING)
+                .view(0L)
 //                .postImageList(dto.getPostImageList())
                 .category(dto.getCategory()) // enum
 //                .postHashtagList(dto.getPostHashtagList()) // 이렇게 받아도 외나?

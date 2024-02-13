@@ -2,11 +2,17 @@ package com.backend.together.domain.comment.service;
 
 import com.backend.together.domain.comment.Comment;
 import com.backend.together.domain.comment.repository.CommentRepository;
+import com.backend.together.domain.member.entity.MemberEntity;
+import com.backend.together.domain.member.repository.MemberRepository;
 import com.backend.together.global.apiPayload.code.status.ErrorStatus;
 import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +20,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class CommentServiceImpl implements CommentService {
     @Autowired
     CommentRepository repository;
+    private final MemberRepository memberRepository;
 
     @Override
     public Comment create(Comment c) {
@@ -76,6 +85,14 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment retrieve() {
         return null;
+    }
+
+    @Override
+    public Page<Comment> getCommentByMemberId(Long memberId, Integer page) {
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        return repository.findAllByWriter(member, PageRequest.of(page, 4, Sort.by("createdAt").descending()));
     }
 
 }

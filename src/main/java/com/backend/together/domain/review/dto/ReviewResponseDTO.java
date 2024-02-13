@@ -10,22 +10,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 public class ReviewResponseDTO {
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GetUserInfoDTO {
-        private Long userId;
-        private String nickname;
-        //private String gender;
-        private Integer age;
-        public static GetUserInfoDTO getUserInfo(MemberEntity member) {
-            return GetUserInfoDTO.builder()
-                    .userId(member.getMemberId())
-                    .nickname(member.getNickname())
-                    .build();
-        }
-    }
 
     @Builder
     @Getter
@@ -118,6 +102,26 @@ public class ReviewResponseDTO {
             return WriterInfoDTO.builder()
                     .memberId(review.getReviewer().getMemberId())
                     .nickname(review.getReviewer().getNickname())
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AggregationDTO {
+        private MemberEntity friend;
+        private Long reviewAll;
+        private Long reviewEmotionYes;
+        private Long avgScore;
+
+        public static AggregationDTO aggregationDTO(MemberEntity member, Long reviewAll, Long reviewEmotionYes, Long avgScore){
+            return AggregationDTO.builder()
+                    .friend(member)
+                    .reviewAll(reviewAll)
+                    .reviewEmotionYes(reviewEmotionYes)
+                    .avgScore(avgScore)
                     .build();
         }
     }

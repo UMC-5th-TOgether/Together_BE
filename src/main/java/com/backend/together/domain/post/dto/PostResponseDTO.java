@@ -16,13 +16,16 @@ import org.hibernate.Hibernate;
 import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @Getter
 @Setter
@@ -58,16 +61,18 @@ public class PostResponseDTO {
 //                this.createdAt = post.getCreatedAt();
 //        }
 
+
         Long id;
 //        @NotNull
-//        Long memberId;
+
         CommentMemberDTO memberDTO;
         @NotNull
         String title;
         @NotNull
         Gender gender;
         @NotNull
-        Integer personNum;
+        Integer personNumMin;
+        Integer personNumMax;
         @NotNull
         String content;
         @NotNull
@@ -88,11 +93,14 @@ public class PostResponseDTO {
 
         public PostResponseDTO(Post post, CommentMemberDTO memberDTO) {
                 this.id = post.getId();
+
 //                this.memberDTO
                 this.memberDTO = memberDTO;
+
                 this.title = post.getTitle();
                 this.gender = post.getGender(); // enum
-                this.personNum = post.getPersonNum();
+                this.personNumMin = post.getPersonNumMin();
+                this.personNumMax = post.getPersonNumMax();
                 this.content = post.getContent();
                 this.status = post.getStatus(); // enum
                 this.view = post.getView();
@@ -101,15 +109,16 @@ public class PostResponseDTO {
                 Hibernate.initialize(post.getCategory());
                 this.category = post.getCategory();
                 this.createdAt = post.getCreatedAt();
+                this.meetTime = post.getMeetTime();
         }
 
         public PostResponseDTO(Post post) { // 이후 MemberEntity수정시 바꿔야함
                 this.id = post.getId();
 //                this.memberDTO
-//                this.memberDTO = memberDTO;
+                this.memberDTO = memberDTO;
                 this.title = post.getTitle();
                 this.gender = post.getGender(); // enum
-                this.personNum = post.getPersonNum();
+//                this.personNum = post.getPersonNum();
                 this.content = post.getContent();
                 this.status = post.getStatus(); // enum
                 this.view = post.getView();
@@ -125,4 +134,52 @@ public class PostResponseDTO {
                 new PostResponseDTO(post, new CommentMemberDTO(member)); // comment.getWriter()
 }
 
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class PagePostListDTO {
+                Integer pageNo;
+                Integer lastPage;
+                boolean isLast;
+                List<PagePostDTO> posts;
+
+                public static PagePostListDTO pagePostListDTO (Page<Post> post, Integer requestPage) {
+                        List<PagePostDTO> pagePostDTOS = post.stream().map(PagePostDTO::pagePostDTO).toList();
+                        return PagePostListDTO.builder()
+                                .posts(pagePostDTOS)
+                                .pageNo(requestPage)
+                                .lastPage(post.getTotalPages() - 1)
+                                .isLast(requestPage.equals(post.getTotalPages() - 1))
+                                .build();
+                }
+        }
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class PagePostDTO {
+                Long postId;
+                String title;
+                String writerNickname;
+                LocalDate accompaniedDate;
+                Integer personNumMin;
+                Integer personNumMax;
+                String gender;
+                List<String> hashtagList;
+
+                public static PagePostDTO pagePostDTO (Post post) {
+                        return PagePostDTO.builder()
+                                .postId(post.getId())
+                                .title(post.getTitle())
+                                .writerNickname(post.getMember().getNickname())
+                                .accompaniedDate(post.getMeetTime())
+                                .personNumMin(post.getPersonNumMin())
+                                .personNumMax(post.getPersonNumMax())
+                                .gender(post.getGender().toString())
+                                .hashtagList(post.getPostHashtagList().stream().map(hasgtag -> hasgtag.getHashtag().getName()).collect(Collectors.toList()))
+                                .build();
+                }
+        }
 }

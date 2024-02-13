@@ -55,4 +55,6 @@ public class MemberEntity {
     @Column(nullable=true)
     private Provider provider; // 소셜로그인 구분을 위해
 
+    @Column(length = 40)
+    private String profileMessage;
 }

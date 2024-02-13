@@ -1,5 +1,6 @@
 package com.backend.together.domain.post;
 
+import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.global.enums.Category;
 import com.backend.together.domain.comment.Comment;
 import com.backend.together.global.enums.Gender;
@@ -31,39 +32,40 @@ import java.util.List;
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
     private Long id;
 
-    @Column(nullable = false, length = 20) // 추후 변경
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private MemberEntity member;
 
     @Column(nullable = false, length = 40)
     private String title;
+
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'NONE'")
     private Gender gender;
-    @ColumnDefault("0")
-    private Integer personNum;
-    @Column(nullable = false, length = 40)
+
+    @Column(nullable = false)
+    private Integer personNumMin;
+
+    private Integer personNumMax;
+
+    @Column(nullable = false)
     private String content;
+
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'ING'")
+    @ColumnDefault(" 'ING' ")
     private PostStatus status;
+
     // 게시글 조회수 추가 (24.01.13)
-    @Column(nullable = false, length = 20)
-//    @ColumnDefault("0")
+    @ColumnDefault("0")
     private Long view;
 
     // 24.2.5
+    @Column(nullable = false)
     private LocalDate meetTime;
 
-
-    //    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id")
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id")
-////    @Column(nullable = false, length = 40)
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15) DEFAULT 'HOBBY'")
     private Category category;
 
 
@@ -79,6 +81,7 @@ public class Post extends BaseEntity {
     @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
 
+
     // oneTomany member
     @PrePersist
     public void prePersist() {
@@ -86,5 +89,6 @@ public class Post extends BaseEntity {
             this.view = 0L;
     }
 
+    public void updateView(Long viewCount) {this.view = viewCount;}
 
 }

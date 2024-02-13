@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -57,5 +58,23 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public List<FriendList> getRelationshipList(Long userId) {
         return friendListRepository.findByMemberId(userId);
+    }
+
+    @Override
+    public void deleteFriend(Long userId, Long memberId) {
+        MemberEntity member = memberRepository.findByMemberId(userId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        MemberEntity friend = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        FriendList friendList1 = friendListRepository.findByMember1AndMember2(member, friend);
+        FriendList friendList2 = friendListRepository.findByMember1AndMember2(friend, member);
+
+        if (friendList1 == null && friendList2 == null) {
+            throw new CustomHandler(ErrorStatus.FRIEND_NOT_EXIST); //친구 리스트에 없을 경우
+        } else {
+            friendListRepository.delete(Objects.requireNonNullElse(friendList1, friendList2)); //a가 null이면 b를 삭제한다
+        }
     }
 }

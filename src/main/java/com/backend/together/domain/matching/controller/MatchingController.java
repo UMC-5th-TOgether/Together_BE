@@ -62,7 +62,11 @@ public class MatchingController {
 
     @GetMapping("/detail/{matchingId}")
     public ApiResponse<MatchingResponseDTO.GetMatchingDetailDTO> getMatchingDetail(@PathVariable(name = "matchingId") Long matchingId){
-        Matching matching = matchingService.getMatchingDetail(matchingId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.parseLong(authentication.getName());
+
+        Matching matching = matchingService.getMatchingDetail(matchingId, userId);
+
         List<String> matchingImages = matchingImageService.getMatchingImages(matchingId);
 
         return ApiResponse.onSuccess(MatchingResponseDTO.GetMatchingDetailDTO.getMatchingDetail(matching, matchingImages));

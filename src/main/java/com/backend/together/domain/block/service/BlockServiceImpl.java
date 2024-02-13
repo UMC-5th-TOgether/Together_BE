@@ -32,7 +32,7 @@ public class BlockServiceImpl implements BlockService{
                 .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         FriendList friendList1 = friendListRepository.findByMember1AndMember2(blocker, blocked);
-        FriendList friendList2 = friendListRepository.findByMember1AndMember2(blocker, blocked);
+        FriendList friendList2 = friendListRepository.findByMember1AndMember2(blocked, blocker);
 
         //친구 목록에 있으면 삭제
         if (friendList1 != null) {

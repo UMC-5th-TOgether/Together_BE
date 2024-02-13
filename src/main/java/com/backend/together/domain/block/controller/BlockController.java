@@ -5,6 +5,8 @@ import com.backend.together.domain.block.dto.BlockRequestDTO;
 import com.backend.together.domain.block.dto.BlockResponseDTO;
 import com.backend.together.domain.block.service.BlockServiceImpl;
 import com.backend.together.global.apiPayload.ApiResponse;
+import com.backend.together.global.apiPayload.code.status.ErrorStatus;
+import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,10 @@ public class BlockController {
     public ApiResponse<?> createBlock(@RequestBody @Valid BlockRequestDTO.BlockMemberDTO request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = Long.parseLong(authentication.getName());
+
+        if (userId.equals(request.getBlockedId())) {
+            throw new CustomHandler(ErrorStatus.SELF_BLOCK_DECLINE);
+        }
 
         blockService.createBlock(request, userId);
         return ApiResponse.successWithoutResult();
