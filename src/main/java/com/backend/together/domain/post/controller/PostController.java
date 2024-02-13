@@ -2,8 +2,15 @@ package com.backend.together.domain.post.controller;
 
 import com.backend.together.domain.block.Entity.Block;
 import com.backend.together.domain.block.service.BlockServiceImpl;
+
+import com.backend.together.domain.member.entity.MemberEntity;
+import com.backend.together.domain.member.repository.MemberRepository;
+import com.backend.together.domain.member.service.MemberService;
+import com.backend.together.domain.post.converter.PostMemberConverter;
+
 import com.backend.together.global.apiPayload.code.status.ErrorStatus;
 import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
+
 import com.backend.together.global.enums.Category;
 
 import com.backend.together.domain.post.service.PostHashtagService;
@@ -44,6 +51,8 @@ public class PostController {
     private final PostServiceImpl service;
     private final BlockServiceImpl blockService;
     private final PostHashtagService postHashtagService;
+    private final PostMemberConverter postMemberConverter;
+    private final MemberRepository memberRepository;
     StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 
 
@@ -59,11 +68,14 @@ public class PostController {
                         .noneMatch(blocked -> post.getMember().getMemberId().equals(blocked.getBlocked().getMemberId())))
                 .map(post -> {
                     List<String> postHashtags = postHashtagService.getHashtagToStringByPost(post);
-                    PostResponseDTO dto = new PostResponseDTO(post);
-                    dto.setPostHashtagList(postHashtags);
-                    return dto;
+                    PostResponseDTO responseDTO =PostResponseDTO.convertPostToDTO(post, post.getMember());
+
+                    responseDTO.setPostHashtagList(postHashtags);
+                    return responseDTO;
                 })
                 .toList();
+
+
 
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
@@ -74,10 +86,12 @@ public class PostController {
 
         Post entity = service.retrievePostById(postId)
                 .orElseThrow(() -> new CustomHandler(ErrorStatus.POST_NOT_FOUND));
+
         service.updateView(entity);
 
         List<String> list = postHashtagService.getHashtagToStringByPost(entity);
-        PostResponseDTO responseDTO = new PostResponseDTO(entity);
+        MemberEntity member = memberRepository.findById(entity.getId()).get();
+        PostResponseDTO responseDTO =PostResponseDTO.convertPostToDTO(entity, member);
         responseDTO.setPostHashtagList(list);
 
         return ApiResponse.onSuccess(responseDTO);
@@ -91,8 +105,12 @@ public class PostController {
     @GetMapping(params = "keyword")
     public ResponseEntity<?> findPostsByKeyword(@RequestParam String keyword) {
         List<Post> entities = service.retrievePostsByKeyword(keyword);
+        List<PostResponseDTO> dtos = entities.stream()
+                .map(post -> PostResponseDTO.convertPostToDTO(post, post.getMember()))
+                .collect(Collectors.toList());
 
-        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+
+//        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
     }
@@ -104,7 +122,9 @@ public class PostController {
     @GetMapping(params = "memberId")
     public ResponseEntity<?> findPostsByMember(@RequestParam Long memberId) {
         List<Post> entities = service.retrievePostByMemberId(memberId);
-        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        List<PostResponseDTO> dtos = entities.stream()
+                .map(post -> PostResponseDTO.convertPostToDTO(post, post.getMember()))
+                .collect(Collectors.toList());
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
     }
@@ -118,7 +138,9 @@ public class PostController {
         Category categoryEnum = converter.convert(String.valueOf(category));
 
         List<Post> entities = service.retrievePostsByCategory(categoryEnum);
-        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        List<PostResponseDTO> dtos = entities.stream()
+                .map(post -> PostResponseDTO.convertPostToDTO(post, post.getMember()))
+                .collect(Collectors.toList());
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
 
@@ -134,7 +156,9 @@ public class PostController {
         Gender genderEnum = converter.convert(String.valueOf(gender));
 
         List<Post> entities = service.retrievePostsByGender(genderEnum);
-        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        List<PostResponseDTO> dtos = entities.stream()
+                .map(post -> PostResponseDTO.convertPostToDTO(post, post.getMember()))
+                .collect(Collectors.toList());
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
 
@@ -149,7 +173,9 @@ public class PostController {
 
         List<Post> entities = service.retrievePostsByStatus(statusEnum);
 
-        List<PostResponseDTO> dtos = entities.stream().map(PostResponseDTO::new).collect(Collectors.toList());
+        List<PostResponseDTO> dtos = entities.stream()
+                .map(post -> PostResponseDTO.convertPostToDTO(post, post.getMember()))
+                .collect(Collectors.toList());
         ApiResponse<List<PostResponseDTO>> response = ApiResponse.onSuccess(dtos);
         return ResponseEntity.ok().body(response);
 

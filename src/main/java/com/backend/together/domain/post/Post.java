@@ -81,5 +81,14 @@ public class Post extends BaseEntity {
     @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
 
+
+    // oneTomany member
+    @PrePersist
+    public void prePersist() {
+        if (this.view == null)
+            this.view = 0L;
+    }
+
     public void updateView(Long viewCount) {this.view = viewCount;}
+
 }
