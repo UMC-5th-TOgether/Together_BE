@@ -86,4 +86,5 @@ public class Post extends BaseEntity {
             this.view = 0L;
     }
 
+
 }

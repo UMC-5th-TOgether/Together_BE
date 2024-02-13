@@ -2,6 +2,10 @@ package com.backend.together.domain.post.controller;
 
 import com.backend.together.domain.block.Entity.Block;
 import com.backend.together.domain.block.service.BlockServiceImpl;
+import com.backend.together.domain.member.entity.MemberEntity;
+import com.backend.together.domain.member.repository.MemberRepository;
+import com.backend.together.domain.member.service.MemberService;
+import com.backend.together.domain.post.converter.PostMemberConverter;
 import com.backend.together.global.enums.Category;
 
 import com.backend.together.domain.post.service.PostHashtagService;
@@ -37,6 +41,8 @@ public class PostController {
     private final PostServiceImpl service;
     private final BlockServiceImpl blockService;
     private final PostHashtagService postHashtagService;
+    private final PostMemberConverter postMemberConverter;
+    private final MemberRepository memberRepository;
     StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 
     /*
@@ -118,7 +124,8 @@ public class PostController {
         updateView(entity);
 
         List<String> list = postHashtagService.getHashtagToStringByPost(entity);
-        PostResponseDTO responseDTO = new PostResponseDTO(entity);
+        MemberEntity member = memberRepository.findById(entity.getMemberId()).get();
+        PostResponseDTO responseDTO =PostResponseDTO.convertPostToDTO(entity, member);
         responseDTO.setPostHashtagList(list);
 
 //        Post post = entity.orElse(null);
