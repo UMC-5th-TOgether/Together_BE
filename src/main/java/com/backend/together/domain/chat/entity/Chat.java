@@ -1,14 +1,15 @@
 package com.backend.together.domain.chat.entity;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
+
 @Data
+@Document(collection = "chat")
 public class Chat {
     @Id
     private String id;

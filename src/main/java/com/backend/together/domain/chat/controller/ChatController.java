@@ -23,7 +23,7 @@ public class ChatController {
     private final SimpMessagingTemplate msgOperation;
     private final MemberRepository memberRepository;
 
-    @GetMapping("chatRoom/list")
+    @GetMapping("/chatRoom/list")
     public ResponseEntity<Queue<ChatRoomInfoResponseDto>> findAllChatRoom() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long memberId = Long.parseLong(authentication.getName());
@@ -48,12 +48,19 @@ public class ChatController {
 //        notificationService.notify(chatResponseDto.getReceiverId(),chatDetailResponseDto);
     }
 
+      /*
+    1. pub/chat/send 준비 , 보낼데이터(채팅) 첫채팅이면 chatRoomId = null
+    2. /sub/chat/room 여기로 데이터가 날아옴 , chatRoomId를 줌 , 그 받음 chatRoomId를 이제 가지고 있어야함
+    3. /sub/chat/room/(받은 chatRoomId)에 구독
+    4. /sub/chat/room/(chatRoomId)에서 받은 데이터를 가지고 , /pub/chat/read에 그대로 보내기
+     */
+
     @MessageMapping("/chat/read")
     public void readChat(ChatResponseDto chatResponseDto) {
         chatService.markAsRead(chatResponseDto);
 
     }
-    @GetMapping("chat/unread")
+    @GetMapping("/chat/unread")
     public ResponseEntity<Boolean> existUnReadChat(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long memberId = Long.parseLong(authentication.getName());
