@@ -83,6 +83,10 @@ public class PostController {
     }
     @GetMapping("/{postId}")
     public ApiResponse<?> findById(@PathVariable(name = "postId") Long postId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.parseLong(authentication.getName());
+        MemberEntity member = memberRepository.findByMemberId(userId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         Post entity = service.retrievePostById(postId)
                 .orElseThrow(() -> new CustomHandler(ErrorStatus.POST_NOT_FOUND));
@@ -90,9 +94,9 @@ public class PostController {
         service.updateView(entity);
 
         List<String> list = postHashtagService.getHashtagToStringByPost(entity);
-        MemberEntity member = entity.getMember();
+        MemberEntity writer = entity.getMember();
 
-        PostResponseDTO responseDTO = PostResponseDTO.convertPostToDTO(entity, member);
+        PostResponseDTO.PostResponseDTO2 responseDTO = PostResponseDTO.PostResponseDTO2.responseDTO2(entity, writer, member);
         responseDTO.setPostHashtagList(list);
 
         return ApiResponse.onSuccess(responseDTO);
