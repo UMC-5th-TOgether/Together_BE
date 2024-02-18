@@ -27,5 +27,5 @@ public interface PostService {
 
             // ...해시태그 검색, 카테고리 검색 등.....
 
-
+    Post updatePost(Long memberId, Long postId, PostRequestDTO request);
 }

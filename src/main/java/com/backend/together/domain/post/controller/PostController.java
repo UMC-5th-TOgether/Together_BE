@@ -107,7 +107,12 @@ public class PostController {
     public ResponseEntity<?> findPostsByKeyword(@RequestParam String keyword) {
         List<Post> entities = service.retrievePostsByKeyword(keyword);
         List<PostResponseDTO> dtos = entities.stream()
-                .map(post -> PostResponseDTO.convertPostToDTO(post, post.getMember()))
+                .map(post -> {
+                    List<String> hashtagList = postHashtagService.getHashtagToStringByPost(post);
+                    PostResponseDTO responseDTO = PostResponseDTO.convertPostToDTO(post, post.getMember());
+                    responseDTO.setPostHashtagList(hashtagList);
+                    return responseDTO;
+                })
                 .collect(Collectors.toList());
 
 
@@ -246,5 +251,15 @@ public class PostController {
             throw new CustomHandler(ErrorStatus.INVALID_PAGE_NUMBER);
         }
         return ApiResponse.onSuccess(PostResponseDTO.PagePostListDTO.pagePostListDTO(posts, page));
+    }
+
+    @PatchMapping("/{postId}/edit")
+    ApiResponse<?> patchPost(@PathVariable Long postId, @RequestBody @Valid PostRequestDTO request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long memberId = Long.parseLong(authentication.getName());
+        Post post = service.updatePost(memberId, postId, request);
+
+        postHashtagService.updateHashtag(post, request.getPostHashtagList());
+        return ApiResponse.successWithoutResult();
     }
 }
