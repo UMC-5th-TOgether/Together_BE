@@ -1,8 +1,11 @@
 package com.backend.together.domain.mypage.service;
 
+import com.amazonaws.util.CollectionUtils;
 import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.member.repository.MemberRepository;
 import com.backend.together.domain.mypage.dto.MyInfoDto;
+import com.backend.together.global.apiPayload.code.status.ErrorStatus;
+import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 import com.backend.together.global.aws.s3.AmazonS3Manager;
 import com.backend.together.global.aws.s3.Uuid;
 import com.backend.together.global.aws.s3.UuidRepository;
@@ -78,18 +81,33 @@ public class MyPageService {
     }
 
     // 프로필 이미지 변경하기
-    public boolean changeImage(String memberId, MultipartFile image) throws Exception {
-        Optional<MemberEntity> member = memberRepository.findById(Long.parseLong(memberId));
+    public boolean changeImage(String memberId, MultipartFile image) {
+        MemberEntity member = memberRepository.findById(Long.parseLong(memberId))
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        //수정: 사진 자체의 이름이 길면 db에 안 올라가서 그 부분은 지웠습니다!
         String uuid = UUID.randomUUID().toString();
-        String uuidUrl = uuid+image.getOriginalFilename();
-        Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuidUrl).build());
+        Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
+
+        //이미 프사가 있으면 s3에서 지우기
+        if (member.getImage() != null){
+            String fileKeyName = member.getImage().split("com/")[1];
+            s3Manager.deleteFile(fileKeyName);
+        }
 
         String imageUrl = s3Manager.uploadFile(s3Manager.generateMemberKeyName(savedUuid), image); // 이미지 업로드하기
+        member.setImage(imageUrl); // 프로필 이미지 변경
+        memberRepository.save(member);
+
+        return true;
+    }
+    // 프로필 메세지 변경하기
+    public boolean changeProfileMessage(String memberId, String profileMessage) throws Exception {
+        Optional<MemberEntity> member = memberRepository.findById(Long.parseLong(memberId));
 
         if(member.isPresent()) {
             MemberEntity memberEntity = member.get();
-            memberEntity.setImage(imageUrl); // 프로필 이미지 변경
+            memberEntity.setProfileMessage(profileMessage);
             memberRepository.save(memberEntity);
             return true;
         }

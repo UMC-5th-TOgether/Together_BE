@@ -1,6 +1,7 @@
 package com.backend.together.global.aws.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.backend.together.global.config.AmazonConfig;
@@ -32,6 +33,14 @@ public class AmazonS3Manager{
         }
 
         return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
+    }
+
+    public void deleteFile(String keyName) {
+        try {
+            amazonS3.deleteObject(new DeleteObjectRequest(amazonConfig.getBucket(), keyName));
+        } catch (Exception e) {
+            log.error("error at AmazonS3Manager deleteFile: {}", (Object) e.getStackTrace());
+        }
     }
 
     public String generateReviewKeyName(Uuid uuid) {
