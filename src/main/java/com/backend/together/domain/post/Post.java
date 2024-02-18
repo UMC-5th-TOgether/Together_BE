@@ -1,6 +1,7 @@
 package com.backend.together.domain.post;
 
 import com.backend.together.domain.member.entity.MemberEntity;
+import com.backend.together.domain.post.converter.StringListConverter;
 import com.backend.together.global.enums.Category;
 import com.backend.together.domain.comment.Comment;
 import com.backend.together.global.enums.Gender;
@@ -68,10 +69,12 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-
+// 24.2.18
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<PostImage> postImageList = new ArrayList<>();
+
+@Builder.Default
+private List<PostImage> postImageList = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Builder.Default
@@ -80,6 +83,9 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
+
+
+
 
 
     // oneTomany member

@@ -4,9 +4,14 @@ import com.backend.together.domain.block.Entity.Block;
 import com.backend.together.domain.block.service.BlockServiceImpl;
 import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.member.repository.MemberRepository;
+import com.backend.together.domain.post.PostImage;
 import com.backend.together.domain.post.dto.PostRequestDTO;
+import com.backend.together.domain.post.repository.PostImageRepository;
 import com.backend.together.global.apiPayload.code.status.ErrorStatus;
 import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
+import com.backend.together.global.aws.s3.AmazonS3Manager;
+import com.backend.together.global.aws.s3.Uuid;
+import com.backend.together.global.aws.s3.UuidRepository;
 import com.backend.together.global.enums.Category;
 import com.backend.together.domain.post.repository.HashtagRepository;
 import com.backend.together.global.enums.Gender;
@@ -25,9 +30,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,11 +48,45 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostRepository repository;
     @Autowired
+    private PostImageRepository postImageRepository;
+    @Autowired
     private HashtagRepository hashtagRepository;
     @Autowired
     private PostHashtagService postHashtagService;
     @PersistenceContext
     private EntityManager entityManager;
+    @Autowired
+    private UuidRepository uuidRepository;
+    @Autowired
+    private AmazonS3Manager s3Manager;
+    public boolean uploadImages(String postId, MultipartFile[] images) throws Exception {
+        Optional<Post> postOptional = repository.findById(Long.parseLong(postId));
+
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+            List<String> imageUrls = new ArrayList<>();
+
+            for (MultipartFile image : images) {
+                String uuid = UUID.randomUUID().toString();
+                String uuidUrl = uuid + image.getOriginalFilename();
+                Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuidUrl).build());
+
+                String imageUrl = s3Manager.uploadFile(s3Manager.generatePostKeyName(savedUuid), image); // 이미지 업로드하기
+                imageUrls.add(imageUrl);
+                PostImage postImage = PostImage.builder().
+                        imageUrl(imageUrl)
+                        .post(repository.findById(Long.valueOf(postId)).get()).build();
+                postImageRepository.save(postImage);
+
+            }
+
+//            repository.save(post);
+            return true;
+        } else {
+            throw new Exception("작성된 게시글이 없습니다.");
+        }
+    }
+
 
     @Override
     public Post createPost(PostRequestDTO requestDTO, Long memberId) {
