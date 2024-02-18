@@ -1,12 +1,8 @@
 package com.backend.together.domain.member.dto;
 
-import com.backend.together.domain.member.entity.MemberEntity;
-import com.backend.together.domain.member.entity.enums.Gender;
-import com.backend.together.domain.member.entity.enums.MemberStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
+
+import java.util.UUID;
 
 @Data
 @Builder
@@ -24,4 +20,45 @@ public class MemberDto {
     private String gender;
     private String image;
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class IsUserExistDTO{
+        boolean exist;
+        String nickname;
+        String password;
+        String email;
+
+        public static MemberDto.IsUserExistDTO isUserExistDTO(boolean isExist, String nickname, String email){
+            return IsUserExistDTO.builder()
+                    .exist(isExist)
+                    .nickname(nickname)
+                    .email(email)
+                    .password(UUID.randomUUID().toString())
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SocialDTO{
+        String email;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SocialResponseDTO{
+        String token;
+
+        public static MemberDto.SocialResponseDTO socialResponseDTO(TokenDto token){
+            return SocialResponseDTO.builder()
+                    .token(token.getToken())
+                    .build();
+        }
+    }
 }
