@@ -41,4 +41,18 @@ public class PostHashtagService {
     public List<String> getHashtagToStringByPost(Post post) {
         return postHashtagRepository.findHashtagNamesByPostId(post);
     }
+
+    public void updateHashtag(Post post, List<String> hashtags) {
+        List<PostHashtag> hashtagList = postHashtagRepository.findAllByPost(post);
+
+        if (!hashtagList.isEmpty()) {
+            postHashtagRepository.deleteAll(hashtagList);
+        }
+
+        hashtags.stream()
+                .map(hashtag ->
+                        hashtagService.findByTagName(hashtag)
+                                .orElseGet(() -> hashtagService.save(hashtag)))
+                .forEach(hashtag -> mapHashtagToPost(post, hashtag));
+    }
 }
