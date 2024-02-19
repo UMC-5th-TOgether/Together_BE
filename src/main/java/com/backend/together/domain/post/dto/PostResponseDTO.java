@@ -241,6 +241,7 @@ public class PostResponseDTO {
         @Getter
         public static class PostMemberDTO {
 
+                private Long id;
                 private String nickname;
                 private String age;
                 private String gender;
@@ -249,6 +250,7 @@ public class PostResponseDTO {
 
                 public static PostMemberDTO postMemberDTO(MemberEntity member, MemberEntity writer) {
                         return PostMemberDTO.builder()
+                                .id(writer.getMemberId())
                                 .nickname(writer.getNickname())
                                 .age(writer.getAge())
                                 .gender(writer.getGender())
