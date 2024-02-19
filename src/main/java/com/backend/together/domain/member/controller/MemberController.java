@@ -3,17 +3,16 @@ package com.backend.together.domain.member.controller;
 import com.backend.together.domain.member.dto.MemberDto;
 import com.backend.together.domain.member.dto.TokenDto;
 import com.backend.together.domain.member.entity.MemberEntity;
-import com.backend.together.domain.member.entity.enums.Gender;
 import com.backend.together.domain.member.entity.enums.MemberStatus;
 import com.backend.together.domain.member.entity.enums.Provider;
 import com.backend.together.domain.member.service.MemberService;
 import com.backend.together.domain.member.social.*;
+import com.backend.together.global.apiPayload.ApiResponse;
 import com.backend.together.global.response.ResponseDto;
 import com.backend.together.global.security.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -139,68 +138,20 @@ public class MemberController {
 
     //구글로 로그인
     @GetMapping ("/login/google")
-    public ResponseEntity<ResponseDto> googleLogin(@RequestParam String code){
+    public ApiResponse<?> googleLogin(@RequestParam String code){
         GoogleToken googleToken = memberService.getGoogleToken(code);
         GoogleProfile googleProfile = memberService.getGoogleProfile(googleToken);
-        try {
-            MemberEntity memberEntity = MemberEntity.builder()
-                    .nickname(googleProfile.name)  //이름은 구글에서 제공하는 닉네임
-                    .password(UUID.randomUUID().toString())  //비밀번호는 랜덤값으로 지정
-                    .email(googleProfile.email) //이메일 : 구글에서 제공하는 이메일
-                    .memberStatus(MemberStatus.NORMAL)
-                    .provider(Provider.GOOGLE)
-                    .build();
-            //memberService.create(memberEntity);
 
-            String token = memberService.googleLogin(memberEntity);
-            TokenDto tokenDto = TokenDto.builder()
-                    .token(token).build();
-            List<TokenDto> result = new ArrayList<>();
-            result.add(tokenDto);
-
-            ResponseDto responseDto = ResponseDto.<TokenDto>builder()
-                    .code(200).isSuccess(true).message("구글 로그인 성공").data(result).build();
-            return ResponseEntity.ok().body(responseDto);
-        }
-        catch (Exception e){
-        ResponseDto responseDto = ResponseDto.builder()
-                .code(400).message("구글 로그인 실패 - " + e.getMessage()).isSuccess(false).build();
-        return ResponseEntity.badRequest().body(responseDto);
-        }
+        return ApiResponse.onSuccess(MemberDto.IsUserExistDTO.isUserExistDTO(!memberService.checkEmail(googleProfile.email), googleProfile.name, googleProfile.email));
     }
 
     // 카카오로 로그인
     @GetMapping ("/login/kakao")
-    public ResponseEntity<ResponseDto> kakaoLogin(@RequestParam String code){
+    public ApiResponse<?> kakaoLogin(@RequestParam String code){
         KakaoToken kakaoToken = memberService.getKakaoToken(code);
         KakaoProfile kakaoProfile = memberService.getKakaoProfile(kakaoToken);
 
-        try {// 카카오 : 프로필 사진이랑 닉네임만 제공
-            MemberEntity memberEntity = MemberEntity.builder()
-                    .nickname(kakaoProfile.getProperties().getNickname())  //이름은 카카오에서 제공하는 닉네임
-                    .email(kakaoProfile.getId().toString()) //이메일: 카카오제공하는 id로(카카오에서 제공X)
-                    .password(UUID.randomUUID().toString())  //비밀번호: 랜덤값으로 지정
-                    .image(kakaoProfile.getProperties().getProfile_image())
-                    .memberStatus(MemberStatus.NORMAL)
-                    .provider(Provider.KAKAO)
-                    .build();
-
-            String token = memberService.kakaoLogin(memberEntity);
-
-            TokenDto tokenDto = TokenDto.builder()
-                    .token(token).build();
-            List<TokenDto> result = new ArrayList<>();
-            result.add(tokenDto);
-
-            ResponseDto responseDto = ResponseDto.<TokenDto>builder()
-                    .code(200).isSuccess(true).message("카카오 로그인 성공").data(result).build();
-            return ResponseEntity.ok().body(responseDto);
-        }
-        catch (Exception e){
-            ResponseDto responseDto = ResponseDto.builder()
-                    .code(400).message("카카오 로그인 실패 - " + e.getMessage()).isSuccess(false).build();
-            return ResponseEntity.badRequest().body(responseDto);
-        }
+        return ApiResponse.onSuccess(MemberDto.IsUserExistDTO.isUserExistDTO(!memberService.checkEmail(kakaoProfile.getId().toString()), kakaoProfile.getProperties().getNickname(), kakaoProfile.getId().toString()));
     }
 
     // 네이버로 로그인
@@ -268,4 +219,109 @@ public class MemberController {
 
     }
 
+    // 이메일 중복
+    @GetMapping("/checkEmail")
+    public ResponseEntity<ResponseDto> checkEmail(@RequestParam(required = true) String email){
+        if (memberService.checkEmail(email)){
+            List<Boolean> result=new ArrayList<>();
+            result.add(true);
+            ResponseDto responseDTO = ResponseDto.<Boolean>builder()
+                    .code(200).isSuccess(true).message("사용 가능한 이메일입니다.").data(result).build();
+            return ResponseEntity.ok().body(responseDTO);
+        }
+        else{
+            List<Boolean> result=new ArrayList<>();
+            result.add(false);
+            ResponseDto responseDTO=ResponseDto.<Boolean>builder()
+                    .code(400).isSuccess(false).message("중복된 이메일입니다.").data(result).build();
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+
+    }
+
+    @PostMapping("/socialSignup")
+    public ResponseEntity<?> socialSignUp(@RequestParam String provider, @RequestBody MemberDto request) {
+        Provider socialProvider = null;
+        if (provider.equals("google")) {
+            socialProvider = Provider.GOOGLE;
+
+            try {
+                MemberEntity member = MemberEntity.builder()
+                        .nickname(request.getNickname())
+                        .password(request.getPassword())
+                        .email(request.getEmail())
+                        .memberStatus(MemberStatus.NORMAL)
+                        .provider(socialProvider)
+                        .name(request.getName())
+                        .age(request.getAge())
+                        .gender(request.getGender())
+                        .build();
+
+                String token = memberService.googleLogin(member);
+                TokenDto tokenDto = TokenDto.builder()
+                        .token(token).build();
+                List<TokenDto> result = new ArrayList<>();
+                result.add(tokenDto);
+
+                ResponseDto<?> responseDto = ResponseDto.builder()
+                        .code(200).isSuccess(true).message("구글 로그인 성공").build();
+                return ResponseEntity.ok().body(responseDto);
+
+            } catch (Exception e){
+                ResponseDto<?> responseDto = ResponseDto.builder()
+                        .code(400).message("구글 로그인 실패 - " + e.getMessage()).isSuccess(false).build();
+                return ResponseEntity.badRequest().body(responseDto);
+            }
+
+        } else if (provider.equals("kakao")) {
+            socialProvider = Provider.KAKAO;
+
+            try {
+                MemberEntity member = MemberEntity.builder()
+                        .nickname(request.getNickname())
+                        .password(request.getPassword())
+                        .email(request.getEmail())
+                        .memberStatus(MemberStatus.NORMAL)
+                        .provider(socialProvider)
+                        .name(request.getName())
+                        .age(request.getAge())
+                        .gender(request.getGender())
+                        .build();
+
+                String token = memberService.kakaoLogin(member);
+                TokenDto tokenDto = TokenDto.builder()
+                        .token(token).build();
+                List<TokenDto> result = new ArrayList<>();
+                result.add(tokenDto);
+
+                ResponseDto<?> responseDto = ResponseDto.builder()
+                        .code(200).isSuccess(true).message("카카오 로그인 성공").build();
+                return ResponseEntity.ok().body(responseDto);
+
+            } catch (Exception e){
+                ResponseDto<?> responseDto = ResponseDto.builder()
+                        .code(400).message("카카오 로그인 실패 - " + e.getMessage()).isSuccess(false).build();
+                return ResponseEntity.badRequest().body(responseDto);
+            }
+        }
+
+        return null;
+    }
+
+    @PostMapping("/socialLogin")
+    public ApiResponse<?> socialLogin(@RequestParam String provider, @RequestBody MemberDto.SocialDTO request) throws Exception {
+        MemberEntity member = memberService.findMemberByEmail(request.getEmail());
+
+        String token = null;
+        if (provider.equals("google")) {
+            token = memberService.googleLogin(member);
+        } else if (provider.equals("kakao")){
+            token = memberService.kakaoLogin(member);
+        }
+
+        TokenDto tokenDto = TokenDto.builder()
+                .token(token).build();
+
+        return ApiResponse.onSuccess(MemberDto.SocialResponseDTO.socialResponseDTO(tokenDto));
+    }
 }

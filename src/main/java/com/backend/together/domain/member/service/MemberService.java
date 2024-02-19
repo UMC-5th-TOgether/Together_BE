@@ -4,6 +4,8 @@ import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.member.entity.enums.Provider;
 import com.backend.together.domain.member.repository.MemberRepository;
 import com.backend.together.domain.member.social.*;
+import com.backend.together.global.apiPayload.code.status.ErrorStatus;
+import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 import com.backend.together.global.security.TokenProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -309,6 +311,7 @@ public class MemberService {
         Optional<MemberEntity> findMember = memberRepository.findByEmail(memberEntity.getEmail());
 
         if (findMember.isEmpty()) { //해당 이메일의 유저가 없다면 회원가입 하기
+
             memberRepository.save(memberEntity);
             String token = tokenProvider.create(memberEntity);
 
@@ -425,12 +428,29 @@ public class MemberService {
 
         Message message = new Message();
         // 발신번호 및 수신번호는 반드시 01012345678 형태로 입력되어야 합니다.
-        message.setFrom("발신번호");
+        message.setFrom("01025925840"); // 발신번호
         message.setTo(to); // 수신번호
         message.setText("[TOgether] 아래의 인증번호를 입력해주세요\n" + verificationCode);
 
         SingleMessageSentResponse response = messageService.sendOne(new SingleMessageSendingRequest(message));
         return response;
     }
-    
+
+    // 이메일 중복
+    public boolean checkEmail(String email) {
+        final Optional<MemberEntity> member = memberRepository.findByEmail(email);
+        if(member.isPresent()) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    public MemberEntity findMemberByEmail(String email) {
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        return member;
+    }
 }

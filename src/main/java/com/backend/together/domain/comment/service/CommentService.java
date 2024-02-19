@@ -2,6 +2,7 @@ package com.backend.together.domain.comment.service;
 
 import com.backend.together.domain.comment.Comment;
 import org.hibernate.sql.Update;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -16,5 +17,6 @@ public interface CommentService {
 
     public Comment retrieve();
 
+    Page<Comment> getCommentByMemberId(Long memberId, Integer page);
 
 }
