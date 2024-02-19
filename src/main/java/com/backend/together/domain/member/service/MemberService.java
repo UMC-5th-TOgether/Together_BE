@@ -4,6 +4,8 @@ import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.member.entity.enums.Provider;
 import com.backend.together.domain.member.repository.MemberRepository;
 import com.backend.together.domain.member.social.*;
+import com.backend.together.global.apiPayload.code.status.ErrorStatus;
+import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 import com.backend.together.global.security.TokenProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -309,6 +311,7 @@ public class MemberService {
         Optional<MemberEntity> findMember = memberRepository.findByEmail(memberEntity.getEmail());
 
         if (findMember.isEmpty()) { //해당 이메일의 유저가 없다면 회원가입 하기
+
             memberRepository.save(memberEntity);
             String token = tokenProvider.create(memberEntity);
 
@@ -443,5 +446,11 @@ public class MemberService {
             return true;
         }
     }
-    
+
+    public MemberEntity findMemberByEmail(String email) {
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        return member;
+    }
 }

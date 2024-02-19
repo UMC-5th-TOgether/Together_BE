@@ -192,6 +192,32 @@ public class PostServiceImpl implements PostService {
         return repository.findAllByMember(member, PageRequest.of(page, 4, Sort.by("createdAt").descending()));
     }
 
+    @Override
+    public Post updatePost(Long memberId, Long postId, PostRequestDTO request) {
+        MemberEntity member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Post post = repository.findById(postId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.POST_NOT_FOUND));
+
+        if (!post.getMember().equals(member)) {
+            throw new CustomHandler(ErrorStatus.INVALID_APPROACH); //작성자가 아니면 수정 불가
+        }
+
+        post.setContent(request.getContent());
+        post.setPersonNumMin(request.getPersonNumMin());
+        post.setPersonNumMax(request.getPersonNumMax());
+        post.setMeetTime(request.getMeetTime());
+        post.setGender(request.getGender());
+        post.setTitle(request.getTitle());
+
+        repository.save(post);
+
+        Post newPost = repository.findById(postId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.POST_NOT_FOUND));
+
+        return newPost;
+    }
+
     private Sort getSort(String sortBy) {
         return switch (sortBy) {
             case "popularity" -> Sort.by("view").descending();

@@ -154,6 +154,10 @@ public class PostController {
     }
     @GetMapping("/{postId}")
     public ApiResponse<?> findById(@PathVariable(name = "postId") Long postId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = Long.parseLong(authentication.getName());
+        MemberEntity member = memberRepository.findByMemberId(userId)
+                .orElseThrow(() -> new CustomHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         Post entity = service.retrievePostById(postId)
                 .orElseThrow(() -> new CustomHandler(ErrorStatus.POST_NOT_FOUND));
@@ -161,9 +165,9 @@ public class PostController {
         service.updateView(entity);
 
         List<String> list = postHashtagService.getHashtagToStringByPost(entity);
-        MemberEntity member = entity.getMember();
+        MemberEntity writer = entity.getMember();
 
-        PostResponseDTO responseDTO = PostResponseDTO.convertPostToDTO(entity, member);
+        PostResponseDTO.PostResponseDTO2 responseDTO = PostResponseDTO.PostResponseDTO2.responseDTO2(entity, writer, member);
         responseDTO.setPostHashtagList(list);
 
         return ApiResponse.onSuccess(responseDTO);
@@ -178,7 +182,12 @@ public class PostController {
     public ResponseEntity<?> findPostsByKeyword(@RequestParam String keyword) {
         List<Post> entities = service.retrievePostsByKeyword(keyword);
         List<PostResponseDTO> dtos = entities.stream()
-                .map(post -> PostResponseDTO.convertPostToDTO(post, post.getMember()))
+                .map(post -> {
+                    List<String> hashtagList = postHashtagService.getHashtagToStringByPost(post);
+                    PostResponseDTO responseDTO = PostResponseDTO.convertPostToDTO(post, post.getMember());
+                    responseDTO.setPostHashtagList(hashtagList);
+                    return responseDTO;
+                })
                 .collect(Collectors.toList());
 
 
@@ -318,6 +327,14 @@ public class PostController {
         }
         return ApiResponse.onSuccess(PostResponseDTO.PagePostListDTO.pagePostListDTO(posts, page));
     }
-    // test
 
+    @PatchMapping("/{postId}/edit")
+    ApiResponse<?> patchPost(@PathVariable Long postId, @RequestBody @Valid PostRequestDTO request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long memberId = Long.parseLong(authentication.getName());
+        Post post = service.updatePost(memberId, postId, request);
+
+        postHashtagService.updateHashtag(post, request.getPostHashtagList());
+        return ApiResponse.successWithoutResult();
+    }
 }

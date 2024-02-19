@@ -135,10 +135,52 @@ public class PostResponseDTO {
                 this.createdAt = post.getCreatedAt();
         }
 
-        public static PostResponseDTO convertPostToDTO(Post post, MemberEntity member) {
+        public static PostResponseDTO convertPostToDTO(Post post, MemberEntity writer) {
         return
-                new PostResponseDTO(post, new CommentMemberDTO(member)); // comment.getWriter()
-}
+                new PostResponseDTO(post, new CommentMemberDTO(writer)); // comment.getWriter()
+
+        }
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class PostResponseDTO2 {
+                Long id;
+                PostMemberDTO writer;
+                String title;
+                Gender gender;
+                Integer personNumMin;
+                Integer personNumMax;
+                String content;
+                PostStatus status;
+                Long view;
+                Category category;
+                @Builder.Default
+                List<String> postHashtagList =  new ArrayList<>();
+                private LocalDate meetTime;
+                private LocalDateTime createdAt;
+
+                public static PostResponseDTO2 responseDTO2(Post post, MemberEntity writer, MemberEntity member) {
+                        PostMemberDTO memberDTO = PostMemberDTO.postMemberDTO(member, writer);
+
+                        return PostResponseDTO2.builder()
+                                .id(post.getId())
+                                .title(post.getTitle())
+                                .gender(post.getGender())
+                                .personNumMax(post.getPersonNumMax())
+                                .personNumMin(post.getPersonNumMin())
+                                .content(post.getContent())
+                                .status(post.getStatus())
+                                .view(post.getView())
+                                .category(post.getCategory())
+                                .meetTime(post.getMeetTime())
+                                .createdAt(post.getCreatedAt())
+                                .writer(memberDTO)
+                                .build();
+                }
+        }
 
         @Getter
         @NoArgsConstructor
@@ -187,5 +229,30 @@ public class PostResponseDTO {
                                 .hashtagList(post.getPostHashtagList().stream().map(hasgtag -> hasgtag.getHashtag().getName()).collect(Collectors.toList()))
                                 .build();
                 }
+        }
+
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Getter
+        public static class PostMemberDTO {
+
+                private String nickname;
+                private String age;
+                private String gender;
+                private String image;
+                private boolean IsWriter;
+
+                public static PostMemberDTO postMemberDTO(MemberEntity member, MemberEntity writer) {
+                        return PostMemberDTO.builder()
+                                .nickname(writer.getNickname())
+                                .age(writer.getAge())
+                                .gender(writer.getGender())
+                                .image(writer.getImage())
+                                .IsWriter(member.equals(writer))
+                                .build();
+                }
+
         }
 }
