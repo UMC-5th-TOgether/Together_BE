@@ -5,6 +5,7 @@ import com.backend.together.domain.comment.dto.CommentMemberDTO;
 import com.backend.together.domain.comment.dto.CommentResponseDTO;
 import com.backend.together.domain.member.dto.MemberDto;
 import com.backend.together.domain.member.entity.MemberEntity;
+import com.backend.together.domain.post.PostImage;
 import com.backend.together.domain.post.converter.PostMemberConverter;
 import com.backend.together.global.enums.Category;
 import com.backend.together.domain.post.Post;
@@ -159,10 +160,11 @@ public class PostResponseDTO {
                 Category category;
                 @Builder.Default
                 List<String> postHashtagList =  new ArrayList<>();
-                private LocalDate meetTime;
-                private LocalDateTime createdAt;
+                LocalDate meetTime;
+                LocalDateTime createdAt;
+                List<String> postImages;
 
-                public static PostResponseDTO2 responseDTO2(Post post, MemberEntity writer, MemberEntity member) {
+                public static PostResponseDTO2 responseDTO2(Post post, List<String> postImages, MemberEntity writer, MemberEntity member) {
                         PostMemberDTO memberDTO = PostMemberDTO.postMemberDTO(member, writer);
 
                         return PostResponseDTO2.builder()
@@ -172,6 +174,7 @@ public class PostResponseDTO {
                                 .personNumMax(post.getPersonNumMax())
                                 .personNumMin(post.getPersonNumMin())
                                 .content(post.getContent())
+                                .postImages(postImages)
                                 .status(post.getStatus())
                                 .view(post.getView())
                                 .category(post.getCategory())

@@ -68,8 +68,7 @@ public class PostServiceImpl implements PostService {
 
             for (MultipartFile image : images) {
                 String uuid = UUID.randomUUID().toString();
-                String uuidUrl = uuid + image.getOriginalFilename();
-                Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuidUrl).build());
+                Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
 
                 String imageUrl = s3Manager.uploadFile(s3Manager.generatePostKeyName(savedUuid), image); // 이미지 업로드하기
                 imageUrls.add(imageUrl);

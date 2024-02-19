@@ -10,8 +10,11 @@ import com.backend.together.domain.block.service.BlockServiceImpl;
 import com.backend.together.domain.member.entity.MemberEntity;
 import com.backend.together.domain.member.repository.MemberRepository;
 import com.backend.together.domain.member.service.MemberService;
+import com.backend.together.domain.post.PostImage;
 import com.backend.together.domain.post.converter.PostMemberConverter;
 
+import com.backend.together.domain.post.repository.PostImageRepository;
+import com.backend.together.domain.post.service.PostImageService;
 import com.backend.together.global.apiPayload.code.status.ErrorStatus;
 import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 
@@ -67,6 +70,7 @@ public class PostController {
     private final PostHashtagService postHashtagService;
     private final PostMemberConverter postMemberConverter;
     private final MemberRepository memberRepository;
+    private final PostImageService postImageService;
     StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 
     @PostMapping("/upload")
@@ -164,10 +168,12 @@ public class PostController {
 
         service.updateView(entity);
 
+        List<String> postImageList = postImageService.getPostImages(postId);
+
         List<String> list = postHashtagService.getHashtagToStringByPost(entity);
         MemberEntity writer = entity.getMember();
 
-        PostResponseDTO.PostResponseDTO2 responseDTO = PostResponseDTO.PostResponseDTO2.responseDTO2(entity, writer, member);
+        PostResponseDTO.PostResponseDTO2 responseDTO = PostResponseDTO.PostResponseDTO2.responseDTO2(entity, postImageList, writer, member);
         responseDTO.setPostHashtagList(list);
 
         return ApiResponse.onSuccess(responseDTO);
