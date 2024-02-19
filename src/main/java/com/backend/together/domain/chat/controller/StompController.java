@@ -27,12 +27,13 @@ public class StompController {
     private SimpMessageSendingOperations simpMessageSendingOperations;
 
     @MessageMapping("/message")
-    public void receiveMessage(@Payload SocketMessageRequestDto socketMessageRequsetDto){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long memberId = Long.parseLong(authentication.getName());
-        log.info("receiveMessage " + socketMessageRequsetDto.getMessage());
-        Long chatRoomId = socketMessageRequsetDto.getChatRoomId();
-        SocketMessage socketMessage = chatMessageService.saveMessage(socketMessageRequsetDto);
+    public void receiveMessage(@Payload SocketMessageRequestDto socketMessageRequestDto){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Long memberId = Long.parseLong(authentication.getName());
+
+        log.info("receiveMessage " + socketMessageRequestDto.getMessage());
+        Long chatRoomId = socketMessageRequestDto.getChatRoomId();
+        SocketMessage socketMessage = chatMessageService.saveMessage(socketMessageRequestDto);
         log.info("receiveMessage " + socketMessage.getSender());
         SocketMessageResponseDto chatMessage = SocketMessageResponseDto.builder()
                 .chatRoomId(chatRoomId)

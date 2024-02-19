@@ -31,4 +31,7 @@ public class ApiRes<T> {
     public static <T> ApiRes<T> error(String message) {
         return new ApiRes<>(ERROR_STAUTS, message, null);
     }
+    public boolean isSuccess() {
+        return SUCCESS_STATUS.equals(status);
+    }
 }

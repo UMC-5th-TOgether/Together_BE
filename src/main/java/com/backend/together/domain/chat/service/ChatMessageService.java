@@ -7,8 +7,6 @@ import com.backend.together.domain.chat.entity.ChatRoom;
 import com.backend.together.domain.chat.entity.SocketMessage;
 import com.backend.together.domain.chat.repository.ChatMessageRepository;
 import com.backend.together.domain.chat.repository.ChatRoomRepository;
-import io.jsonwebtoken.Claims;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -40,12 +38,14 @@ public class ChatMessageService {
     }
 
     public SocketMessage saveMessage(SocketMessageRequestDto socketMessageRequestDto) {
+//        Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessageRequestDto.getToken());
+//        String username = userInfoFromToken.getSubject();
         ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
         Long chatRoomId = socketMessageRequestDto.getChatRoomId();
 
         // ChatRoom 엔터티 조회
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("ChatRoom not found"));
+                .orElseThrow(() -> new Error("ChatRoom not found"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
