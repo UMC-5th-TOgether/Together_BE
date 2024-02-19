@@ -15,7 +15,7 @@ import java.util.List;
 public class ChatMessageController {
     private final ChatMessageService chatMessageService;
 
-    @GetMapping("/message/{chatRoomId}")
+    @GetMapping("/api/message/{chatRoomId}")
     public ApiRes<List<SocketMessageResponseDto>> getMessages(@PathVariable Long chatRoomId) {
         return chatMessageService.getMessages(chatRoomId);
     }
