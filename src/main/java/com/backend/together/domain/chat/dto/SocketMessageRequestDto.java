@@ -8,9 +8,6 @@ public class SocketMessageRequestDto {
     private Status status;
     private Long chatRoomId;
     private String message;
-//    private Long memberId;
-//
-//    public void setMemberId(Long memberId) {
-//        this.memberId = memberId;
-//    }
+    private String token;
+
 }

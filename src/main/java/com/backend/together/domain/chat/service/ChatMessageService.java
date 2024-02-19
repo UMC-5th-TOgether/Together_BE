@@ -75,12 +75,12 @@ public class ChatMessageService {
         ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
         Long chatRoomId = socketMessageRequestDto.getChatRoomId();
 
-        // 토큰을 통해 사용자명 가져오기
-        String username = getUsernameFromToken();
-
-        // 나머지 로직은 그대로 유지
+        // ChatRoom 엔터티 조회
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
+                .orElseThrow(() -> new IllegalArgumentException("ChatRoom not found"));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
 
         SocketMessage socketMessage = SocketMessage.builder()
                 .chatRoom(chatRoom)
@@ -103,15 +103,15 @@ public class ChatMessageService {
 
         return socketMessage;
     }
-    private String getUsernameFromToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            return authentication.getName();
-        } else {
-            log.error("Authentication is null or not authenticated in getUsernameFromToken");
-            return null;
-        }
-    }
+//    private String getUsernameFromToken() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            return authentication.getName();
+//        } else {
+//            log.error("Authentication is null or not authenticated in getUsernameFromToken");
+//            return null;
+//        }
+//    }
 
 
     @Transactional
