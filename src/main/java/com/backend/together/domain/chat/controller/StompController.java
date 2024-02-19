@@ -28,10 +28,30 @@ public class StompController {
     @Autowired
     private SimpMessageSendingOperations simpMessageSendingOperations;
 
-    @MessageMapping("/message")
-    public void receiveMessage(@Payload SocketMessageRequestDto socketMessageRequestDto){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    @MessageMapping("/message")
+//    public void receiveMessage(@Payload SocketMessageRequestDto socketMessageRequestDto){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Long memberId = Long.parseLong(authentication.getName());
+//
+//        log.info("receiveMessage " + socketMessageRequestDto.getMessage());
+//        Long chatRoomId = socketMessageRequestDto.getChatRoomId();
+//        SocketMessage socketMessage = chatMessageService.saveMessage(socketMessageRequestDto);
+//        log.info("receiveMessage " + socketMessage.getSender());
+//        SocketMessageResponseDto chatMessage = SocketMessageResponseDto.builder()
+//                .chatRoomId(chatRoomId)
+//                .sender(socketMessage.getSender())
+//                .time((socketMessage.getTime()))
+//                .message(socketMessage.getMessage())
+//                .build();
+//        simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/message", chatMessage);
+//    }
+@MessageMapping("/message")
+public void receiveMessage(@Payload SocketMessageRequestDto socketMessageRequestDto){
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication != null && authentication.isAuthenticated()) {
         Long memberId = Long.parseLong(authentication.getName());
+
         log.info("receiveMessage " + socketMessageRequestDto.getMessage());
         Long chatRoomId = socketMessageRequestDto.getChatRoomId();
         SocketMessage socketMessage = chatMessageService.saveMessage(socketMessageRequestDto);
@@ -43,7 +63,10 @@ public class StompController {
                 .message(socketMessage.getMessage())
                 .build();
         simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/message", chatMessage);
+    } else {
+        log.error("Authentication is null or not authenticated");
     }
+}
 
     @MessageMapping("/readMessage")
     public void handleReadMessage(@Payload ReadMessagePayload payload) {

@@ -107,8 +107,10 @@ public class ChatMessageService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             return authentication.getName();
+        } else {
+            log.error("Authentication is null or not authenticated in getUsernameFromToken");
+            return null;
         }
-        return null;
     }
 
 
