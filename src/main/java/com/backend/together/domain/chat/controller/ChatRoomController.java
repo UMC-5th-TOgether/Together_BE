@@ -23,13 +23,18 @@ public class ChatRoomController {
     private final MemberRepository memberRepository;
 
     //내가 속한 채팅방 목록 조회
+//    @GetMapping("/rooms/me")
+//    public List<ChatRoomDto> getMyChatRooms() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Long userId = Long.parseLong(authentication.getName());
+//        return chatRoomService.findChatRoomsByUserId(userId);
+//    }
+
     @GetMapping("/rooms/me")
-    public List<ChatRoomDto> getMyChatRooms() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public List<ChatRoomDto> getMyChatRooms(Authentication authentication) {
         Long userId = Long.parseLong(authentication.getName());
         return chatRoomService.findChatRoomsByUserId(userId);
     }
-
     //특정 채팅방 정보 조회
     @GetMapping("/rooms/{chatRoomId}")
     public ChatRoomInfoDto getChatRoomInfo(@PathVariable Long chatRoomId){

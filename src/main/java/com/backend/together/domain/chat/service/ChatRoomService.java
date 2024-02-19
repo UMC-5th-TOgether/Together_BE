@@ -38,13 +38,21 @@ public class ChatRoomService {
         return ApiRes.successData(chatRoomResponseDto);
     }
 
+//    @Transactional
+//    public List<ChatRoomDto> findChatRoomsByUserId(Long userId) {
+//        List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByUserId(userId);
+//        return chatRooms.stream()
+//                .map(chatRoom -> convertToDto(chatRoom, userId))
+//                .sorted(Comparator.comparing(ChatRoomDto::getLatestMessageTime, Comparator.nullsLast(Comparator.reverseOrder())))
+//                .collect(Collectors.toList());
+//    }
     @Transactional
-    public List<ChatRoomDto> findChatRoomsByUserId(Long userId) {
+        public List<ChatRoomDto> findChatRoomsByUserId(Long userId) {
         List<ChatRoom> chatRooms = chatRoomRepository.findChatRoomsByUserId(userId);
         return chatRooms.stream()
-                .map(chatRoom -> convertToDto(chatRoom, userId))
-                .sorted(Comparator.comparing(ChatRoomDto::getLatestMessageTime, Comparator.nullsLast(Comparator.reverseOrder())))
-                .collect(Collectors.toList());
+            .map(chatRoom -> convertToDto(chatRoom, userId))
+            .sorted(Comparator.comparing(ChatRoomDto::getLatestMessageTime, Comparator.nullsLast(Comparator.reverseOrder())))
+            .collect(Collectors.toList());
     }
 
     private ChatRoomDto convertToDto(ChatRoom chatRoom, Long userId) {
