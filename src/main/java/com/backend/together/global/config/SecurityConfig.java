@@ -33,6 +33,7 @@ public class SecurityConfig {
 
                     .authorizeHttpRequests((authorizeRequests) ->
                             authorizeRequests.requestMatchers("/", "/api/auth/**", "/api/test").permitAll()
+                                    .requestMatchers("/ws/chat/**").permitAll()
                                     .anyRequest().authenticated()
                     );
 
@@ -40,6 +41,7 @@ public class SecurityConfig {
                     jwtFilter,
                     CorsFilter.class
             );
+
             return http.build();
 
         } catch (Exception e) {
