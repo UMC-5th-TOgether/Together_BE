@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
+import java.security.Principal;
+
 @Controller
 @RequiredArgsConstructor
 @Slf4j(topic = "Message")
@@ -27,10 +29,8 @@ public class StompController {
     private SimpMessageSendingOperations simpMessageSendingOperations;
 
     @MessageMapping("/message")
-    public void receiveMessage(@Payload SocketMessageRequestDto socketMessageRequestDto){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        Long memberId = Long.parseLong(authentication.getName());
-
+    public void receiveMessage(@Payload SocketMessageRequestDto socketMessageRequestDto,Principal principal){
+        String username = principal.getName();
         log.info("receiveMessage " + socketMessageRequestDto.getMessage());
         Long chatRoomId = socketMessageRequestDto.getChatRoomId();
         SocketMessage socketMessage = chatMessageService.saveMessage(socketMessageRequestDto);

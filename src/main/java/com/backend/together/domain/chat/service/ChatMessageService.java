@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,18 +38,49 @@ public class ChatMessageService {
         this.simpMessageSendingOperations = simpMessageSendingOperations;
     }
 
+//    public SocketMessage saveMessage(SocketMessageRequestDto socketMessageRequestDto) {
+//        ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+//        Long chatRoomId = socketMessageRequestDto.getChatRoomId();
+//
+//        // ChatRoom 엔터티 조회
+//        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+//                .orElseThrow(() -> new Error("ChatRoom not found"));
+//
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = authentication.getName();
+//
+//        SocketMessage socketMessage = SocketMessage.builder()
+//                .chatRoom(chatRoom)
+//                .sender(username)
+//                .time(time)
+//                .message(socketMessageRequestDto.getMessage())
+//                .build();
+//
+//        chatMessageRepository.save(socketMessage);
+//
+//        // WebSocket을 통해 메시지 전송
+//        SocketMessageResponseDto chatMessage = SocketMessageResponseDto.builder()
+//                .chatRoomId(chatRoomId)
+//                .sender(socketMessage.getSender())
+//                .time(socketMessage.getTime())
+//                .message(socketMessage.getMessage())
+//                .build();
+//
+//        simpMessageSendingOperations.convertAndSend("/topic/" + chatRoomId + "/message", chatMessage);
+//
+//        return socketMessage;
+//    }
+
     public SocketMessage saveMessage(SocketMessageRequestDto socketMessageRequestDto) {
-//        Claims userInfoFromToken = jwtUtil.getUserInfoFromToken(socketMessageRequestDto.getToken());
-//        String username = userInfoFromToken.getSubject();
         ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
         Long chatRoomId = socketMessageRequestDto.getChatRoomId();
 
-        // ChatRoom 엔터티 조회
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new Error("ChatRoom not found"));
+        // 토큰을 통해 사용자명 가져오기
+        String username = getUsernameFromToken();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        // 나머지 로직은 그대로 유지
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new RuntimeException("ChatRoom not found"));
 
         SocketMessage socketMessage = SocketMessage.builder()
                 .chatRoom(chatRoom)
@@ -71,6 +103,14 @@ public class ChatMessageService {
 
         return socketMessage;
     }
+    private String getUsernameFromToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName();
+        }
+        return null;
+    }
+
 
     @Transactional
     public void markMessageAsRead(Long messageId, String senderUsername) {
