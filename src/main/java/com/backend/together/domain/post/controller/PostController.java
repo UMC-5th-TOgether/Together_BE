@@ -1,5 +1,9 @@
 package com.backend.together.domain.post.controller;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.backend.together.domain.block.Entity.Block;
 import com.backend.together.domain.block.service.BlockServiceImpl;
 
@@ -11,6 +15,8 @@ import com.backend.together.domain.post.converter.PostMemberConverter;
 import com.backend.together.global.apiPayload.code.status.ErrorStatus;
 import com.backend.together.global.apiPayload.exception.handler.CustomHandler;
 
+import com.backend.together.global.aws.s3.AmazonS3Manager;
+import com.backend.together.global.aws.s3.Uuid;
 import com.backend.together.global.enums.Category;
 
 import com.backend.together.domain.post.service.PostHashtagService;
@@ -21,20 +27,27 @@ import com.backend.together.domain.post.Post;
 import com.backend.together.domain.post.dto.PostRequestDTO;
 import com.backend.together.domain.post.dto.PostResponseDTO;
 import com.backend.together.domain.post.service.PostServiceImpl;
+import com.backend.together.global.response.ResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.backend.together.domain.post.converter.StringToEnumConverterFactory;
+import lombok.val;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 /*
 * 추후 : @AuthenticationPrincipal
@@ -47,6 +60,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
+    private final AmazonS3Manager awsManager;
 
     private final PostServiceImpl service;
     private final BlockServiceImpl blockService;
@@ -55,6 +69,63 @@ public class PostController {
     private final MemberRepository memberRepository;
     StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 
+    @PostMapping("/upload")
+    public ResponseEntity<ResponseDto> uploadPostImages(@RequestParam("post") String postId, @RequestPart("files") MultipartFile[] images) {
+        try {
+            boolean isSuccess = service.uploadImages(postId, images);
+
+            ResponseDto<Boolean> responseDto = ResponseDto.<Boolean>builder()
+                    .code(HttpStatus.OK.value())
+                    .isSuccess(isSuccess)
+                    .message("이미지 업로드 성공")
+                    .data(Collections.singletonList(isSuccess))
+                    .build();
+
+            return ResponseEntity.ok().body(responseDto);
+        } catch (Exception e) {
+            ResponseDto responseDto = ResponseDto.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .isSuccess(false)
+                    .message("이미지 업로드 실패 - " + e.getMessage())
+                    .build();
+
+            return ResponseEntity.badRequest().body(responseDto);
+        }
+    }
+
+
+    // test...
+//    @Autowired
+//    private AmazonS3 amazonS3Client;
+//    @RequestMapping("/upload")
+
+
+//    @PostMapping("/multipart-files")
+//    public ResponseEntity<String> uploadMultipleFiles(
+//            @RequestParam("type") String type,
+//            @RequestPart("uploadFiles") List<MultipartFile> multipartFiles) {
+//
+//        try {
+//            for (MultipartFile file : multipartFiles) {
+//                ObjectMetadata objectMetadata = new ObjectMetadata();
+//                objectMetadata.setContentType(file.getContentType());
+//                objectMetadata.setContentLength(file.getSize());
+//
+//                PutObjectRequest putObjectRequest = new PutObjectRequest(
+//                        "bucketName",
+//                        "objectKey",
+//                        file.getInputStream(),
+//                        objectMetadata);
+//
+//                amazonS3Client.putObject(putObjectRequest);
+//            }
+//            return ResponseEntity.ok("업로드 완료");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 중 오류 발생");
+//        }
+//    }
+// ..................................................................
 
     @GetMapping()
     public ResponseEntity<?> findAllPost(){

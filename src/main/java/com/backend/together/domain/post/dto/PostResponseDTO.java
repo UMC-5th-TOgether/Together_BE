@@ -85,6 +85,8 @@ public class PostResponseDTO {
 
         @Builder.Default
         List<String> postHashtagList =  new ArrayList<>();
+        @Builder.Default
+        List<String> postImageList =  new ArrayList<>();
 
         // 24.2.5
 // 24.2.5
@@ -110,6 +112,10 @@ public class PostResponseDTO {
                 this.category = post.getCategory();
                 this.createdAt = post.getCreatedAt();
                 this.meetTime = post.getMeetTime();
+                this.postImageList = post.getPostImageList().stream().map(image -> image.getImageUrl()).collect(Collectors.toList());
+                this.postHashtagList = post.getPostHashtagList().stream().map(hasgtag -> hasgtag.getHashtag().getName()).collect(Collectors.toList());
+
+
         }
 
         public PostResponseDTO(Post post) { // 이후 MemberEntity수정시 바꿔야함
