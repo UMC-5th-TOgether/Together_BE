@@ -1,16 +1,25 @@
 package com.backend.together.domain.chat.dto;
+//
+//import lombok.AllArgsConstructor;
+//import lombok.Getter;
+//
+//import java.util.List;
+//
+//@Getter
+//@AllArgsConstructor
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
+@Builder
 public class ChatRoomResponseDto {
     private Long chatRoomId;
-    private List<ChatResponseDto> chatList;
-    //    private String receiverProfileImg;
-    private Long receiverId;
-    private String receiverName;
 }
+//    private Long chatRoomId;
+//    private List<ChatResponseDto> chatList;
+//    private Long receiverId;
+//    private String receiverName;
+//}

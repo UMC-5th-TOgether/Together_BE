@@ -15,13 +15,9 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns("*");
 //                .withSockJS();
     }
-
-    //ws://localhost:8080/ws/chat
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/pub")
-                .enableSimpleBroker("/sub");
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/topic", "/queue");
     }
-
 }
